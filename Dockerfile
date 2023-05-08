@@ -1,6 +1,5 @@
-FROM node:12-alpine
-
-RUN apk add --no-cache python2 g++ make
+FROM node:16
+#RUN apk add --no-cache python2 g++ make
 
 WORKDIR /app
 

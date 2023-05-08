@@ -1,11 +1,11 @@
-import logo from './logo.svg';
+
 import React, {useState} from 'react';
-import './App.css';
-
 import HomePage from './routes/HomePage';
-import DashBoardPage from './routes/DashboardPage';
-
+import ShowsComplaints from './routes/ShowsComplaints';
+import ShowsComplainants from './routes/ShowsComplainants';
+import Layout from './components/Layout';
 import { Routes, Route } from 'react-router-dom'
+
 
 
 function App() {
@@ -15,10 +15,12 @@ function App() {
     <>
       
       <Routes>
-        <Route path="/" element={<HomePage />}>
+      <Route path="/" element={<Layout />}>
           {/* public routes */}
          
-          <Route path="dashboard" element={<DashBoardPage />} />
+          <Route path="home" element={<HomePage />} />
+          <Route path="complaints" element={<ShowsComplaints />} />
+          <Route path="complainants" element={<ShowsComplainants />} />
          
          
 

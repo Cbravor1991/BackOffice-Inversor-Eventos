@@ -2,12 +2,18 @@
   "name": "ticketapp-organizador",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/Cbravor1991/prueba_render",
+  "homepage": "/home",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Cbravor1991/prueba_render.git"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.12.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -18,6 +24,7 @@
     "react-scripts": "5.0.1",
     "react-spring": "^9.7.1",
     "sass": "^1.60.0",
+    "sweetalert2": "^11.7.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
