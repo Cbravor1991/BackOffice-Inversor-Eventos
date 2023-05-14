@@ -5,6 +5,7 @@ import ShowsComplaints from './routes/ShowsComplaints';
 import ShowsComplainants from './routes/ShowsComplainants';
 import Layout from './components/Layout';
 import { Routes, Route } from 'react-router-dom'
+import View from './routes/View';
 
 
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="home" element={<HomePage />} />
           <Route path="complaints" element={<ShowsComplaints />} />
           <Route path="complainants" element={<ShowsComplainants />} />
+          <Route path="view" element={<View />} />
          
          
 
