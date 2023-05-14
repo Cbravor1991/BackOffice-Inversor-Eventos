@@ -54,9 +54,41 @@ export default function ShowsComplaints() {
   const [searchText, setSearchText] = React.useState('');
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const handleLoadUserComplaints = async (e, row) => {
+
+
+    try {
+      var options = {
+        method: 'GET',
+        url: `/admin/event/complaints?event_id=${row.event_id_use}`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+        },
+      };
+
+      axios.request(options)
+        //.then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          if (response.length === 0) {
+            console.log("No hay evento")
+          }
+          window.localStorage.setItem("userComplaints", JSON.stringify(response.data));
+
+          window.location.href = "/eventUserCompalints";
+        })
+
+    } catch (error) {
+      console.error(error);
+    }
+
+  }
+
+
 
   const handleViewClick = async (e, row) => {
-   
+
 
     try {
       var options = {
@@ -99,6 +131,7 @@ export default function ShowsComplaints() {
     } else {
       token_user = window.localStorage.getItem("token");
     }
+    console.log(token_user);
 
     const headers = {
       accept: "application/json",
@@ -115,33 +148,36 @@ export default function ShowsComplaints() {
         headers: headers,
       });
 
-      const promises = response.data.map(async (item) => {
-        const response_2 = await axios({
-          method: "get",
-          url: `/admin/event?event_id=${item.id}`,
-          headers: headers,
-        });
+      const response_2 = await axios({
+        method: "get",
+        url: `/admin/complaints`,
+        headers: headers,
+      });
 
-        const event = {
-          event_id_use: item.id,
-          title: response_2.data.Event.title,
-          category: response_2.data.Event.category,
-          state: response_2.data.Event.state,
-          denounce: item.denounce,
-        };
+      const promises = response.data.map(async (item, index) => {
+        const eventObj = response_2.data.find(
+          (event) => event.Event.id === item.id
+        );
 
-        return event;
+        if (eventObj) {
+          const event = {
+            event_id_use: eventObj.Event.id,
+            title: eventObj.Event.title,
+            category: eventObj.Event.category,
+            state: eventObj.Event.state,
+            denounce: item.denounce,
+          };
+          return event;
+        }
       });
 
       const events = await Promise.all(promises);
-
       load.push(...events);
       setComplainants(load);
     } catch (error) {
       console.log(error);
     }
   };
-
   useEffect(() => {
     if (!window.localStorage.getItem("token")) {
       console.log("no autorizado")
@@ -157,6 +193,79 @@ export default function ShowsComplaints() {
     setSearchText(event.target.value);
   };
 
+  const handleEnable = (e, row) => {
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user)
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = axios({
+        method: "post",
+        url: `/admin/event/enable?event_id=${row.event_id_use}`,
+        headers: headers,
+      });
+
+      window.location.href = '/complaints'
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
+
+  const handleSuspend = (e, row) => {
+
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user)
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = axios({
+        method: "post",
+        url: `/admin/event/suspend?event_id=${row.event_id_use}`,
+        headers: headers,
+      });
+
+      window.location.href = '/complaints'
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
+
 
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
@@ -166,6 +275,11 @@ export default function ShowsComplaints() {
   const filteredData = complainants.filter((row) =>
     row.title.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const handleBack = () => {
+    window.localStorage.setItem("userComplaints", null);
+    window.history.back();
+  }
 
 
 
@@ -195,6 +309,20 @@ export default function ShowsComplaints() {
                   <MenuItem sx={{ color: 'black' }} value={5}>5</MenuItem>
                   <MenuItem sx={{ color: 'black' }} value={10}>10</MenuItem>
                   <MenuItem sx={{ color: 'black' }} value={25}>25</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="demo-simple-select-label">Fecha</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={rowsPerPage}
+                  label="Mostrar"
+                  onChange={handleRowsPerPageChange}
+                >
+                  <MenuItem sx={{ color: 'black' }} value={5}>Historicos</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={10}>Ultimos 30 dias</MenuItem>
+
                 </Select>
               </FormControl>
               <TextField
@@ -235,20 +363,29 @@ export default function ShowsComplaints() {
                               {row.category}
                             </StyledTableCell>
                             <StyledTableCell align="center" component="th" scope="row">
-                              {row.denounce}
+                              <Link to="#" onClick={(e) => handleLoadUserComplaints(e, row)}>
+                                {row.denounce}
+                              </Link>
                             </StyledTableCell>
                             <StyledTableCell align="center" component="th" scope="row">
-                              {row.state}
+                              {row.state === "published" ? "Publicado" : "Suspendido"}
                             </StyledTableCell>
-
-
 
                             <StyledTableCell align="center">
-                              <IconButton aria-label="eliminar">
-                                <DeleteIcon />
-                              </IconButton>
+                              {row.state === "published" ? (
+                                <Button aria-label="suspender" onClick={(e) => handleSuspend(e, row)}>
+                                  SUSPENDER
+                                </Button>
+                              ) : (
+                                <Button aria-label="habilitar" onClick={(e) => handleEnable(e, row)}>
+                                  HABILITAR
+                                </Button>
+                              )}
                             </StyledTableCell>
                           </StyledTableRow>
+
+
+
                         ))
                       }
                     </TableBody>

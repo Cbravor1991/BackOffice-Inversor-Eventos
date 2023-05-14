@@ -21,6 +21,8 @@ import swal from 'sweetalert2';
 import { Button, Grid } from '@mui/material';
 import { Height } from '@material-ui/icons';
 import data from '../data/dataComplainants'
+import Typography from '@mui/material/Typography';
+import axios from '../api/axios';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -51,15 +53,69 @@ export default function ShowsComplainants() {
 
 
 
-  const loadComplainants = () => {
-    setComplainants(data)
+  const loadComplaints = async () => {
+    const load = [];
+
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
     
-  }
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = await axios({
+        method: "get",
+        url: "/admin/complaints/users/ranking",
+        headers: headers,
+      });
+
+      const response_2 = await axios({
+        method: "get",
+        url: `/admin/complaints`,
+        headers: headers,
+      });
+
+      const promises = response.data.map(async (item, index) => {
+        const eventObj = response_2.data.find(
+          (event) => event.Event.id === item.id
+        );
+
+        if (eventObj) {
+          const event = {
+            email: eventObj.User.email,
+            name: eventObj.User.name,
+            numberComplaints: item.denounce,
+            state: eventObj.User.suspended,
+
+          };
+          return event;
+        }
+      });
+
+      const events = await Promise.all(promises);
+      load.push(...events);
+      setComplainants(load);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-   
 
-    loadComplainants();
+
+    loadComplaints();
   }, []);
 
 
@@ -67,7 +123,80 @@ export default function ShowsComplainants() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
 
- 
+
+  const handleEnable = (e, row) => {
+   
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user)
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = axios({
+        method: "post",
+        url: `/admin/user/enable?email=${row.email}`,
+        headers: headers,
+      });
+      window.location.href = '/complainants'
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
+
+  const handleSuspend = (e, row) => {
+    console.log('entro')
+
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user)
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = axios({
+        method: "post",
+        url: `/admin/user/suspend?email=${row.email}`,
+        headers: headers,
+      });
+
+      window.location.href = '/complainants'
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
 
 
   const handleSearchChange = (event) => {
@@ -84,51 +213,59 @@ export default function ShowsComplainants() {
     row.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const handleBack = () => {
+
+    window.history.back();
+  }
+
+
 
   return (
-      <div>
-        <Navbar />
-        <CardComplainants />
-        <Grid sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-          <Paper sx={{  width: '100%' }} elevation={5}>
-            <TableContainer component={Grid}>
-              <div>
-                <FormControl sx={{ m: 1, minWidth: 120 }}>
-                  <InputLabel id="demo-simple-select-label">Mostrar</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={rowsPerPage}
-                    label="Mostrar"
-                    onChange={handleRowsPerPageChange}
-                  >
-                    <MenuItem sx={{ color: 'black' }} value={5}>5</MenuItem>
-                    <MenuItem sx={{ color: 'black' }} value={10}>10</MenuItem>
-                    <MenuItem sx={{ color: 'black' }} value={25}>25</MenuItem>
-                  </Select>
-                </FormControl>
-                <TextField
-                  sx={{ m: 1, width: '30ch' }}
-                  label="Buscar por usuario"
-                  variant="outlined"
-                  value={searchText}
-                  onChange={handleSearchChange}
-                />
-              </div>
+    <div>
+      <Navbar />
+      <Typography variant="h6" component="div" sx={{ marginLeft: '550px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
+        Ranking de usuarios denunciantes
+      </Typography>
+      <Grid sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+        <Paper sx={{ width: '100%' }} elevation={5}>
+          <TableContainer component={Grid}>
+            <div>
+              <FormControl sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="demo-simple-select-label">Mostrar</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={rowsPerPage}
+                  label="Mostrar"
+                  onChange={handleRowsPerPageChange}
+                >
+                  <MenuItem sx={{ color: 'black' }} value={5}>5</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={10}>10</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={25}>25</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                sx={{ m: 1, width: '30ch' }}
+                label="Buscar por usuario"
+                variant="outlined"
+                value={searchText}
+                onChange={handleSearchChange}
+              />
+            </div>
 
-              <Grid sx={{ maxHeight: '700px', overflowY: 'scroll'}}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <Grid sx={{ maxHeight: '700px', overflowY: 'scroll' }}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
 
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableCell> Nombre Usuario</StyledTableCell>
-                      <StyledTableCell align="right">Cantidad de denuncias</StyledTableCell>
-                      <StyledTableCell align="right">Estado del usuario</StyledTableCell>
-                      <StyledTableCell align="center">Opciones</StyledTableCell>
-                    </TableRow>
-                  </TableHead>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell> Nombre Usuario</StyledTableCell>
+                    <StyledTableCell align="right">Cantidad de denuncias</StyledTableCell>
+                    <StyledTableCell align="right">Estado del usuario</StyledTableCell>
+                    <StyledTableCell align="center">Opciones</StyledTableCell>
+                  </TableRow>
+                </TableHead>
 
-                  {(complainants && complainants.length > 0) ? 
+                {(complainants && complainants.length > 0) ?
                   (
                     <TableBody>
                       {filteredData
@@ -142,22 +279,25 @@ export default function ShowsComplainants() {
                               {row.numberComplaints}
                             </StyledTableCell>
                             <StyledTableCell align="right">
-                              {row.state}
+                              {row.state === false ? "Habilitado" : "Suspendido"}
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                              <Button aria-label="ver"  >
-                                VER EVENTOS DENUNCIADOS
-                              </Button>
-                              <Button aria-label="editar" >
-                                SUSPENDER/HABILITAR
-                              </Button>
+                              {row.state === false ? (
+                                <Button aria-label="suspender" onClick={(e) => handleSuspend(e, row)}>
+                                  SUSPENDER
+                                </Button>
+                              ) : (
+                                <Button aria-label="habilitar" onClick={(e) => handleEnable(e, row)}>
+                                  HABILITAR
+                                </Button>
+                              )}
                             </StyledTableCell>
                           </StyledTableRow>
                         ))
                       }
-                    </TableBody> 
+                    </TableBody>
                   )
-                  : 
+                  :
                   (
                     <StyledTableRow >
                       <StyledTableCell component="th" scope="row">
@@ -165,12 +305,20 @@ export default function ShowsComplainants() {
                       </StyledTableCell>
                     </StyledTableRow>
                   )}
-                </Table>
-              </Grid>
+              </Table>
+            </Grid>
 
-            </TableContainer>
-          </Paper>
-        </Grid>
-      </div>
+          </TableContainer>
+        </Paper>
+      </Grid>
+      <Grid container sx={{ display: 'flex', marginLeft: '20px', alignItems: 'center', textAlign: 'center' }} >
+        <Button onClick={() => { handleBack() }} sx={{
+          fontFamily: "'Circular Std', Arial, sans-serif", justifyContent: 'center',
+          fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: '#1286f7', borderRadius: 2, px: 2, py: 1, '&:hover': { backgroundColor: '#1c1c1c' }
+        }}>
+          Volver
+        </Button>
+      </Grid>
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import ShowsComplainants from './routes/ShowsComplainants';
 import Layout from './components/Layout';
 import { Routes, Route } from 'react-router-dom'
 import View from './routes/View';
+import MadeComplainantsUsers from './routes/MadeComplaintsUsers';
 
 
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="complaints" element={<ShowsComplaints />} />
           <Route path="complainants" element={<ShowsComplainants />} />
           <Route path="view" element={<View />} />
+          <Route path="eventUserCompalints" element={<MadeComplainantsUsers />} />
          
          
 
