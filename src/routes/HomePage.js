@@ -109,7 +109,7 @@ const HomePage = () => {
                     textDecoration: 'none',
                   }}
                 >
-                  Bienvenido ingresa tus credenciales
+                  ¡Bienvenido! Ingresá tus credenciales
                 </Typography>
 
                 <Grid  sx = {{marginLeft: '100px'}}  >
