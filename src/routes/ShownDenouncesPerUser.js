@@ -95,6 +95,11 @@ let evento = JSON.parse(window.localStorage.getItem("denunciasUsuarios"));
     setRowsPerPage(event.target.value);
   };
 
+  
+  const filteredData = complainants.filter((row) =>
+  row.Complaint.category.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   const handleViewClick = async (e, row) => {
     
 
@@ -191,7 +196,8 @@ let evento = JSON.parse(window.localStorage.getItem("denunciasUsuarios"));
                   {(complainants && complainants.length > 0) ? 
                   (
                     <TableBody>
-                      {complainants
+                      {filteredData
+                        .slice(0, rowsPerPage)
                         .map((row) => (
                           <StyledTableRow key={row.category}>
                             <StyledTableCell align="center" component="th" scope="row">

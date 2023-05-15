@@ -217,7 +217,7 @@ export default function ShowsComplainants() {
 
 
   const filteredData = complainants.filter((row) =>
-    row.name.toLowerCase().includes(searchText.toLowerCase())
+    row.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const handleBack = () => {
@@ -296,6 +296,34 @@ export default function ShowsComplainants() {
                   <MenuItem sx={{ color: 'black' }} value={25}>25</MenuItem>
                 </Select>
               </FormControl>
+
+              <FormControl sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel id="demo-simple-select-label">Fecha</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={rowsPerPage}
+                  label="Mostrar"
+                  onChange={handleRowsPerPageChange}
+                >
+                  <MenuItem sx={{ color: 'black' }} value={5}>Historicos</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={10}>Ultimos 30 dias</MenuItem>
+
+                </Select>
+              </FormControl>
+
+
+
+
+
+
+
+
+
+
+
+
+              
               <TextField
                 sx={{ m: 1, width: '30ch' }}
                 label="Buscar por usuario"
