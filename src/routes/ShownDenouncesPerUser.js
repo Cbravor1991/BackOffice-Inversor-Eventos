@@ -49,12 +49,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function MadeComplainantsUsers() {
+export default function ShownDenouncesPerUser() {
 
-let event = JSON.parse(window.localStorage.getItem("userComplaints"));  
+let evento = JSON.parse(window.localStorage.getItem("denunciasUsuarios"));      
 
 
-  const [complainants, setComplainants] = useState (event);
+
+
+
+  const [complainants, setComplainants] = useState (evento);
+  console.log(complainants)
+
  
 
 
@@ -63,6 +68,15 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
 
   const [searchText, setSearchText] = React.useState('');
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+
+  
+
+
+
+
+
+
 
   const handleBack = () => {
     window.localStorage.setItem("userComplaints", null);
@@ -82,6 +96,7 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
   };
 
   const handleViewClick = async (e, row) => {
+    
 
 
     try {
@@ -122,15 +137,16 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
 
 
 
+
+
   return (
       <div>
         <Navbar />
-        <Typography variant="h6" component="div" sx={{ marginLeft: '600px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
-        <Link to="#" onClick={(e) => handleViewClick(e, complainants[0].id_event)}>
-                               
-                              
-        Evento denunciado: {complainants[0].name}
-        </Link>
+        <Typography variant="h6" component="div" sx={{ marginLeft: '450px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
+      
+        Denuncias realizadas por el usuario:  {window.localStorage.getItem("denunciante")}
+      
+      
       </Typography>
         <Grid sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
           <Paper sx={{  width: '100%' }} elevation={5}>
@@ -164,8 +180,9 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
 
                   <TableHead>
                     <TableRow>
-                    <StyledTableCell align="center"> Mail Usuario</StyledTableCell>
-                      <StyledTableCell align="center"> Categoria denuncia</StyledTableCell>
+                   
+                      <StyledTableCell align="center"> Evento denunciado</StyledTableCell>
+                      <StyledTableCell align="left">Categoria Denuncia</StyledTableCell>
                       <StyledTableCell align="left">Descripción</StyledTableCell>
                       
                     </TableRow>
@@ -177,14 +194,18 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
                       {complainants
                         .map((row) => (
                           <StyledTableRow key={row.category}>
-                             <StyledTableCell align="center" component="th" scope="row">
-                              {row.email}
-                            </StyledTableCell>
                             <StyledTableCell align="center" component="th" scope="row">
-                              {row.category}
+                            <Link to="#" onClick={(e) => handleViewClick(e, row.Complaint.event_id)}>
+                              
+                              {row.title}
+                              </Link>
+                            </StyledTableCell>
+                             
+                            <StyledTableCell align="center" component="th" scope="row">
+                              {row.Complaint.category}
                             </StyledTableCell>
                             <StyledTableCell align="left">
-                              {row.description}
+                              {row.Complaint.description}
                             </StyledTableCell>
                             
                           </StyledTableRow>

@@ -93,11 +93,13 @@ export default function ShowsComplaints() {
 
       const promises = response.data.map(async (item, index) => {
         const eventObj = response_2.data.find(
-          (event) => event.User.id === item.user_id
+          (event) => event.User.id === item.user_id && event.Event.id === item.event_id
         );
 
         if (eventObj) {
           const event = {
+            id_event: eventObj.Event.id,
+            name: eventObj.Event.title,
             category: item.category,
             description: item.description,
             email:eventObj.User.email ,

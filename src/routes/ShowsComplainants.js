@@ -23,6 +23,7 @@ import { Height } from '@material-ui/icons';
 import data from '../data/dataComplainants'
 import Typography from '@mui/material/Typography';
 import axios from '../api/axios';
+import { Link } from 'react-router-dom';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -113,6 +114,12 @@ export default function ShowsComplainants() {
   };
 
   useEffect(() => {
+    if (!window.localStorage.getItem("token") || window.localStorage.getItem("token")==='' ) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    }
+
 
 
     loadComplaints();
@@ -218,6 +225,51 @@ export default function ShowsComplainants() {
     window.history.back();
   }
 
+  const handleDenounce = async (e, row) => {
+   
+
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user)
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
+
+    try {
+      const response = await axios({
+        method: "get",
+        url: `/admin/user/complaints?email=${row.email}`,
+        headers: headers,
+      },
+    
+      
+      );
+      console.log(response.data)
+
+      window.localStorage.setItem("denunciasUsuarios", JSON.stringify(response.data));
+      window.localStorage.setItem("denunciante", (row.email));
+
+      window.location.href = '/shownDenouncesPerUser'
+
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  };
+
 
 
   return (
@@ -272,11 +324,17 @@ export default function ShowsComplainants() {
                         .slice(0, rowsPerPage)
                         .map((row) => (
                           <StyledTableRow key={row.name}>
+
+
+
+
                             <StyledTableCell component="th" scope="row">
                               {row.email}
                             </StyledTableCell>
                             <StyledTableCell align="right">
+                            <Link to="#" onClick={(e) => handleDenounce(e, row)}>
                               {row.numberComplaints}
+                              </Link>
                             </StyledTableCell>
                             <StyledTableCell align="right">
                               {row.state === false ? "Habilitado" : "Suspendido"}
