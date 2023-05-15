@@ -258,7 +258,7 @@ export default function ShowsComplainants() {
 
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell> Nombre Usuario</StyledTableCell>
+                    <StyledTableCell> Mail Usuario</StyledTableCell>
                     <StyledTableCell align="right">Cantidad de denuncias</StyledTableCell>
                     <StyledTableCell align="right">Estado del usuario</StyledTableCell>
                     <StyledTableCell align="center">Opciones</StyledTableCell>
@@ -273,7 +273,7 @@ export default function ShowsComplainants() {
                         .map((row) => (
                           <StyledTableRow key={row.name}>
                             <StyledTableCell component="th" scope="row">
-                              {row.name}
+                              {row.email}
                             </StyledTableCell>
                             <StyledTableCell align="right">
                               {row.numberComplaints}

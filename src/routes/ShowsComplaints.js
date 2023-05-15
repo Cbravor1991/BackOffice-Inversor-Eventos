@@ -54,36 +54,69 @@ export default function ShowsComplaints() {
   const [searchText, setSearchText] = React.useState('');
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  
+
   const handleLoadUserComplaints = async (e, row) => {
 
+    const load = [];
+
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+    console.log(token_user);
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    };
 
     try {
-      var options = {
-        method: 'GET',
+      const response = await axios({
+        method: "get",
         url: `/admin/event/complaints?event_id=${row.event_id_use}`,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
-        },
-      };
+        headers: headers,
+      });
 
-      axios.request(options)
-        //.then((response) => response.json())
-        .then((response) => {
-          console.log(response);
-          if (response.length === 0) {
-            console.log("No hay evento")
-          }
-          window.localStorage.setItem("userComplaints", JSON.stringify(response.data));
+      const response_2 = await axios({
+        method: "get",
+        url: `/admin/complaints`,
+        headers: headers,
+      });
 
-          window.location.href = "/eventUserCompalints";
-        })
+      const promises = response.data.map(async (item, index) => {
+        const eventObj = response_2.data.find(
+          (event) => event.User.id === item.user_id
+        );
 
+        if (eventObj) {
+          const event = {
+            category: item.category,
+            description: item.description,
+            email:eventObj.User.email ,
+         
+          };
+          return event;
+        }
+      });
+
+      const events = await Promise.all(promises);
+      load.push(...events);
+      window.localStorage.setItem("userComplaints", JSON.stringify(load));
+
+        window.location.href = "/eventUserCompalints";
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
 
-  }
+}
 
 
 

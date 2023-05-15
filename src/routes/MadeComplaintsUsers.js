@@ -120,6 +120,7 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
 
                   <TableHead>
                     <TableRow>
+                    <StyledTableCell align="center"> Mail Usuario</StyledTableCell>
                       <StyledTableCell align="center"> Categoria denuncia</StyledTableCell>
                       <StyledTableCell align="left">Descripción</StyledTableCell>
                       
@@ -132,6 +133,9 @@ let event = JSON.parse(window.localStorage.getItem("userComplaints"));
                       {complainants
                         .map((row) => (
                           <StyledTableRow key={row.category}>
+                             <StyledTableCell align="center" component="th" scope="row">
+                              {row.email}
+                            </StyledTableCell>
                             <StyledTableCell align="center" component="th" scope="row">
                               {row.category}
                             </StyledTableCell>
