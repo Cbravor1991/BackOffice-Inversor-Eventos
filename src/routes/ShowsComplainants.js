@@ -95,7 +95,7 @@ export default function ShowsComplainants() {
 
         if (eventObj) {
           const event = {
-            email: eventObj.User.email,
+            email: item.email,
             name: eventObj.User.name,
             numberComplaints: item.denounce,
             state: eventObj.User.suspended,
