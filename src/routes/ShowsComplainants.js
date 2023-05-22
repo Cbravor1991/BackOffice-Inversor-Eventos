@@ -98,7 +98,7 @@ export default function ShowsComplainants() {
             email: item.email,
             name: eventObj.User.name,
             numberComplaints: item.denounce,
-            state: eventObj.User.suspended,
+            state: item.suspended,
 
           };
           return event;
