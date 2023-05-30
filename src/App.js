@@ -8,7 +8,7 @@ import { Routes, Route } from 'react-router-dom'
 import View from './routes/View';
 import MadeComplainantsUsers from './routes/MadeComplaintsUsers';
 import ShownDenouncesPerUser from './routes/ShownDenouncesPerUser';
-
+import Dashboard from './routes/Dashboard';
 
 
 function App() {
@@ -27,29 +27,7 @@ function App() {
           <Route path="view" element={<View />} />
           <Route path="eventUserCompalints" element={<MadeComplainantsUsers />} />
           <Route path="shownDenouncesPerUser" element={<ShownDenouncesPerUser />} />
-         
-         
-
-          {/*
-        <Route element={<RequireAuth allowedRoles={[ROLES.Inquilino]} />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-  
-        <Route element={<RequireAuth allowedRoles={[ROLES.Casero]} />}>
-          <Route path="editor" element={<Editor />} />
-        </Route>
-  
-  
-        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
-          <Route path="admin" element={<Admin />} />
-        </Route>
-  
-        <Route element={<RequireAuth allowedRoles={[ROLES.Casero, ROLES.Admin]} />}>
-          <Route path="lounge" element={<Lounge />} />
-        </Route> */}
-
-
-         
+          <Route path="dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </>
