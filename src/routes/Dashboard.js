@@ -7,46 +7,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import axios from '../api/axios';
 require('highcharts/modules/map')(Highcharts);
-
-function getAllCategories(data) {
-  const categories = [];
-  data.forEach(d => {
-    if (!categories.includes(d.category)) {
-      categories.push(d.category);
-    }
-  });
-  return categories.map(c => ({ value: c, label: c }));
-}
-
-function getAllProducts(data, category) {
-  const products = [];
-  data.forEach(d => {
-    if (d.category === category && !products.includes(d.product)) {
-      products.push(d.product);
-    }
-  });
-  return products.map(c => ({ value: c, label: c }));
-}
-
-function getAllBrands(data, category, product) {
-  const brands = [];
-  data.forEach(d => {
-    if (d.category === category && d.product === product && !brands.includes(d.brand)) {
-      brands.push(d.brand);
-    }
-  });
-  return brands.map(c => ({ value: c, label: c }));
-}
-
-function getSales(data, category, product, brand) {
-  for (let i = 0; i < data.length; i++) {
-    if (data[i].category === category && data[i].product === product && data[i].brand === brand) {
-      return data[i].sales;
-    }
-  }
-}
-
 
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs());
@@ -55,7 +17,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:3000/api/v1/events'); // completar fetch y ver que data traer
+      var options = {
+        method: 'GET',
+        url: '/admin/statistics', // completar
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+        },
+      };
+
+      const response = await fetch(options);
       const data = await response.json();
       setData(data);
     };
@@ -87,6 +58,15 @@ const Dashboard = () => {
               options={{
                 chart: { type: "pie" },
                 title: { text: 'Estado de eventos' },
+                series: [{
+                  name: 'Estados',
+                  data: [
+                    ['Publicados', 14],
+                    ['Finalizados', 14],
+                    ['Cancelados', 14],
+                    ['Suspendidos', 14],
+                  ]
+                }]            
               }}
               highcharts={Highcharts}
             />
@@ -95,8 +75,28 @@ const Dashboard = () => {
 
           <Grid item xs={12} s>
             <Paper style={{ margin: '30px', marginTop: 0, padding: "20px", color: 'grey' }} elevation={4}>
-            <div style={{ margin: '30px', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
-              <FormControl fullWidth>
+            <HighchartsReact
+              options={{
+                chart: { type: 'column' },
+                title: { text: 'Acreditaciones a lo largo del tiempo' },
+                xAxis: {
+                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+                },            
+                yAxis: {
+                  title: {
+                    text: 'Acreditaciones'
+                  }
+                },            
+                series: [{
+                  name: 'Acreditaciones',
+                  data: [10, 20, 30, 40, 50, 60]
+                }],
+              }}
+              highcharts={Highcharts}
+            />
+
+            <div style={{ margin: '5px', display: 'flex', justifyContent: 'center' }}>
+              <FormControl sx={{ minWidth: 100 }} size="small">
                 <InputLabel id="unit">Unidad</InputLabel>
                 <Select
                   labelId="unit"
@@ -111,13 +111,6 @@ const Dashboard = () => {
                 </Select>
               </FormControl>
             </div>
-            <HighchartsReact
-              options={{
-                chart: { type: "column" },
-                title: { text: 'Acreditaciones a lo largo del tiempo' },
-              }}
-              highcharts={Highcharts}
-            />
             </Paper>
           </Grid>
 
@@ -125,17 +118,20 @@ const Dashboard = () => {
             <Paper style={{ margin: '30px', marginTop: 0, padding: "20px", color: 'grey' }} elevation={4}>
             <HighchartsReact
               options={{
-                chart: { type: "column" },
+                chart: { type: 'line' },
                 title: { text: 'Eventos a lo largo del tiempo' },
                 series: [{
-                  name: 'Ventas',
-                  color: '#46A0E9',
-                  // data: sales.map(s => s.amount)
+                  name: 'Eventos',
+                  data: [10, 20, 30, 40, 50, 60]
                 }],
                 xAxis: {
-                  // categories: sales.map(s => s.month),
-                  crosshair: true
-                }          
+                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                },
+                yAxis: {
+                  title: {
+                    text: 'Eventos'
+                  }
+                },  
               }}
               highcharts={Highcharts}
             />
