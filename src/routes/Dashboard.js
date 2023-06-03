@@ -13,30 +13,82 @@ require('highcharts/modules/map')(Highcharts);
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs());
   const [unit, setUnit] = useState('day');
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const [dataState, setDataState] = useState([]);
+  const [dataAttendances, setDataAttendances] = useState({});
+  const [dataEvents, setDataEvents] = useState({});
+  
+  console.log(window.localStorage.getItem("token"));
+  
+  
+  const fetchDataState = async () => {
       var options = {
         method: 'GET',
-        url: '/admin/statistics', // completar
+        url: '/admin/event/statistics/state',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
       };
 
-      const response = await fetch(options);
-      const data = await response.json();
-      setData(data);
-    };
-    fetchData();
+      axios.request(options)
+      .then (function (response) {
+             setDataState([]);
+             console.log(response.data);
+             for(let i in response.data){
+              setDataState(dataState => [...dataState, ({"name":i,"y":response.data[i]})]);
+             }
+             })    
+   };
+    
+    
+  const fetchDataAttendances = async () => {
+      var options = {
+        method: 'GET',
+        url: '/admin/attendances/statistics/distribution',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+        },
+      };
+
+      axios.request(options)
+      .then ((response) => {
+             console.log(JSON.stringify(response.data));
+             setDataAttendances(JSON.stringify(response.data))})
+     };
+    
+    
+   const fetchDataEvents = async () => {
+      var options = {
+        method: 'GET',
+        url: '/admin/events/statistics/distribution',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+        },
+      };
+
+      axios.request(options)
+      .then ((response) => {
+             console.log(JSON.stringify(response.data));
+             setDataEvents(JSON.stringify(response.data))})
+      };
+    
+  
+
+  useEffect(() => {
+    fetchDataState();
+    //fetchDataAttendances();
+    //fetchDataEvents();
+    console.log(dataState);
   }, []);
+
 
   const isDateValid = (date) => {
     const currentDate = new Date();
     return date && date.isAfter(currentDate, 'day');
   };  
+
 
   return (
     <div>
@@ -60,12 +112,7 @@ const Dashboard = () => {
                 title: { text: 'Estado de eventos' },
                 series: [{
                   name: 'Estados',
-                  data: [
-                    ['Publicados', 14],
-                    ['Finalizados', 14],
-                    ['Cancelados', 14],
-                    ['Suspendidos', 14],
-                  ]
+                  data: dataState
                 }]            
               }}
               highcharts={Highcharts}
