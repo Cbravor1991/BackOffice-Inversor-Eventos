@@ -8,10 +8,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import axios from '../api/axios';
+import moment from "moment";
 require('highcharts/modules/map')(Highcharts);
+
 
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs());
+  let today = moment().format('yyyy-MM-DD');
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
   const [dataAttendances, setDataAttendances] = useState({});
@@ -21,16 +24,26 @@ const Dashboard = () => {
   
   
   const fetchDataState = async () => {
+      console.log(today);
+      console.log(initialDate.format('YYYY-MM-DD'));
+      
       var options = {
         method: 'GET',
-        url: '/admin/event/statistics/state',
+        url: 'admin/event/statistics/state',
         headers: {
+          'accept': 'application/json',
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
+        data: {
+           "init_date": initialDate.format('YYYY-MM-DD'),
+           "end_date": today
+        }
       };
 
-      axios.request(options)
+      console.log(options);
+
+      axios(options)
       .then (function (response) {
              setDataState([]);
              console.log(response.data);
