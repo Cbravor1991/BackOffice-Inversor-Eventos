@@ -17,10 +17,10 @@ const Dashboard = () => {
   let today = moment().format('yyyy-MM-DD');
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
-  const [dataAttendances, setDataAttendances] = useState([]);
-  const [categoriesAttendances, setCategoriesAttendances] = useState([]);
-  const [dataEvents, setDataEvents] = useState([]);
-  const [categoriesEvents, setCategoriesEvents] = useState([]);
+  const [dataAttendances, setDataAttendances] = useState([10, 20, 30, 40, 50, 60]);
+  const [categoriesAttendances, setCategoriesAttendances] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
+  const [dataEvents, setDataEvents] = useState([10, 20, 30, 40, 50, 60]);
+  const [categoriesEvents, setCategoriesEvents] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
   
   
   console.log(window.localStorage.getItem("token"));
@@ -74,6 +74,7 @@ const Dashboard = () => {
       axios(options)
       .then (function (response) {
              setDataAttendances([]);
+             setCategoriesAttendances([]);
              console.log(response.data);
              for(let i in response.data){
               setDataAttendances(dataAttendances => [...dataAttendances, i]);
@@ -100,6 +101,7 @@ const Dashboard = () => {
       axios(options)
       .then (function (response) {
              setDataEvents([]);
+             setCategoriesEvents([]);
              console.log(response.data);
              for(let i in response.data){
               setDataEvents(dataEvents => [...dataEvents, i]);
@@ -112,9 +114,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDataState();
-    //fetchDataAttendances();
-    //fetchDataEvents();
-    console.log(dataState);
+    fetchDataAttendances();
+    fetchDataEvents();
   }, []);
 
 
@@ -161,7 +162,7 @@ const Dashboard = () => {
                 chart: { type: 'column' },
                 title: { text: 'Acreditaciones a lo largo del tiempo' },
                 xAxis: {
-                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+                  categories: categoriesAttendances
                 },            
                 yAxis: {
                   title: {
@@ -170,7 +171,7 @@ const Dashboard = () => {
                 },            
                 series: [{
                   name: 'Acreditaciones',
-                  data: [10, 20, 30, 40, 50, 60]
+                  data: dataAttendances
                 }],
               }}
               highcharts={Highcharts}
@@ -203,10 +204,10 @@ const Dashboard = () => {
                 title: { text: 'Eventos a lo largo del tiempo' },
                 series: [{
                   name: 'Eventos',
-                  data: [10, 20, 30, 40, 50, 60]
+                  data: dataEvents
                 }],
                 xAxis: {
-                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                  categories: categoriesEvents,
                 },
                 yAxis: {
                   title: {
