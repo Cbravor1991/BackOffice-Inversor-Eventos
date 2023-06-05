@@ -31,7 +31,7 @@ const Dashboard = () => {
       console.log(initialDate.format('YYYY-MM-DD'));
       
       var options = {
-        method: 'POST',
+        method: 'GET',
         url: 'admin/event/statistics/state',
         headers: {
           'accept': 'application/json',
@@ -59,7 +59,7 @@ const Dashboard = () => {
     
   const fetchDataAttendances = async () => {
       var options = {
-        method: 'POST',
+        method: 'GET',
         url: '/admin/attendances/statistics/distribution',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const Dashboard = () => {
     
    const fetchDataEvents = async () => {
       var options = {
-        method: 'POST',
+        method: 'GET',
         url: '/admin/events/statistics/distribution',
         headers: {
           'Content-Type': 'application/json',
