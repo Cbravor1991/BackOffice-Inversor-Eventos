@@ -13,12 +13,15 @@ require('highcharts/modules/map')(Highcharts);
 
 
 const Dashboard = () => {
-  const [initialDate, setInitialDate] = useState(dayjs());
+  const [initialDate, setInitialDate] = useState(dayjs("2023-04-01"));
   let today = moment().format('yyyy-MM-DD');
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
-  const [dataAttendances, setDataAttendances] = useState({});
-  const [dataEvents, setDataEvents] = useState({});
+  const [dataAttendances, setDataAttendances] = useState([]);
+  const [categoriesAttendances, setCategoriesAttendances] = useState([]);
+  const [dataEvents, setDataEvents] = useState([]);
+  const [categoriesEvents, setCategoriesEvents] = useState([]);
+  
   
   console.log(window.localStorage.getItem("token"));
   
@@ -28,7 +31,7 @@ const Dashboard = () => {
       console.log(initialDate.format('YYYY-MM-DD'));
       
       var options = {
-        method: 'GET',
+        method: 'POST',
         url: 'admin/event/statistics/state',
         headers: {
           'accept': 'application/json',
@@ -56,35 +59,53 @@ const Dashboard = () => {
     
   const fetchDataAttendances = async () => {
       var options = {
-        method: 'GET',
+        method: 'POST',
         url: '/admin/attendances/statistics/distribution',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
+        data: {
+           "init_date": initialDate.format('YYYY-MM-DD'),
+           "end_date": today
+        }
       };
 
-      axios.request(options)
-      .then ((response) => {
-             console.log(JSON.stringify(response.data));
-             setDataAttendances(JSON.stringify(response.data))})
+      axios(options)
+      .then (function (response) {
+             setDataAttendances([]);
+             console.log(response.data);
+             for(let i in response.data){
+              setDataAttendances(dataAttendances => [...dataAttendances, i]);
+              setCategoriesAttendances(categoriesAttendances => [...categoriesAttendances, response.data[i]]);
+             }
+             })    
      };
     
     
    const fetchDataEvents = async () => {
       var options = {
-        method: 'GET',
+        method: 'POST',
         url: '/admin/events/statistics/distribution',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
+        data: {
+           "init_date": initialDate.format('YYYY-MM-DD'),
+           "end_date": today
+        }
       };
 
-      axios.request(options)
-      .then ((response) => {
-             console.log(JSON.stringify(response.data));
-             setDataEvents(JSON.stringify(response.data))})
+      axios(options)
+      .then (function (response) {
+             setDataEvents([]);
+             console.log(response.data);
+             for(let i in response.data){
+              setDataEvents(dataEvents => [...dataEvents, i]);
+              setCategoriesEvents(categoriesEvents => [...categoriesEvents, response.data[i]]);
+             }
+             })    
       };
     
   
