@@ -56,7 +56,7 @@ export default function ShowsComplainants() {
 
   const loadComplaints = async () => {
     const load = [];
-
+  
     let token_user;
     if (!window.localStorage.getItem("token")) {
       console.log("no autorizado");
@@ -65,8 +65,7 @@ export default function ShowsComplainants() {
     } else {
       token_user = window.localStorage.getItem("token");
     }
-    
-
+  
     const headers = {
       accept: "application/json",
       "Access-Control-Allow-Origin": "*",
@@ -74,45 +73,54 @@ export default function ShowsComplainants() {
       "Access-Control-Allow-Headers": "*",
       Authorization: "Bearer " + token_user,
     };
-
+  
     try {
       const response = await axios({
         method: "get",
         url: "/admin/complaints/users/ranking",
         headers: headers,
       });
-
+      console.log("ranking_denunciantes =>", response.data);
+  
       const response_2 = await axios({
         method: "get",
-        url: `/admin/complaints`,
+        url: "/admin/complaints",
         headers: headers,
       });
-
+  
+      console.log("denuncias =>", response_2.data);
+  
+      const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
+  
       const promises = response.data.map(async (item, index) => {
-        const eventObj = response_2.data.find(
-          (event) => event.Event.id === item.id
-        );
-
-        if (eventObj) {
-          const event = {
-            email: item.email,
-            name: eventObj.User.name,
-            numberComplaints: item.denounce,
-            state: item.suspended,
-
-          };
-          return event;
+        if (!processedUsers.has(item.id)) { // Verificar si el usuario ya ha sido procesado
+          processedUsers.add(item.id); // Marcar el usuario como procesado
+  
+          const matchingComplaints = response_2.data.filter(
+            (item_2) => item.id === item_2.Complaint.user_id
+          );
+  
+          if (matchingComplaints.length > 0) {
+            const event = {
+              email: item.email,
+              name: matchingComplaints[0].User.name,
+              numberComplaints: item.denounce,
+              state: item.suspended,
+            };
+  
+            load.push(event);
+          }
         }
       });
-
-      const events = await Promise.all(promises);
-      load.push(...events);
+  
+      await Promise.all(promises); // Esperar a que se completen todas las promesas
+  
       setComplainants(load);
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   useEffect(() => {
     if (!window.localStorage.getItem("token") || window.localStorage.getItem("token")==='' ) {
       console.log("no autorizado");
