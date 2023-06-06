@@ -39,7 +39,7 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
-        data: {
+        params: {
            "init_date": initialDate.format('YYYY-MM-DD'),
            "end_date": finalDate.format('YYYY-MM-DD')
         }
@@ -66,7 +66,7 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
-        data: {
+        params: {
            "init_date": initialDate.format('YYYY-MM-DD'),
            "end_date": finalDate.format('YYYY-MM-DD')
         }
@@ -93,7 +93,7 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + window.localStorage.getItem("token")
         },
-        data: {
+        params: {
            "init_date": initialDate.format('YYYY-MM-DD'),
            "end_date": finalDate.format('YYYY-MM-DD')
         }
