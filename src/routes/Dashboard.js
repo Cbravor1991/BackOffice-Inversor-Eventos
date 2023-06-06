@@ -15,6 +15,7 @@ require('highcharts/modules/map')(Highcharts);
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs("2023-04-01"));
   let today = moment().format('yyyy-MM-DD');
+  const [finalDate, setFinalDate] = useState(dayjs(today));
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
   const [dataAttendances, setDataAttendances] = useState([10, 20, 30, 40, 50, 60]);
@@ -40,7 +41,7 @@ const Dashboard = () => {
         },
         data: {
            "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": today
+           "end_date": finalDate.format('YYYY-MM-DD')
         }
       };
 
@@ -67,7 +68,7 @@ const Dashboard = () => {
         },
         data: {
            "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": today
+           "end_date": finalDate.format('YYYY-MM-DD')
         }
       };
 
@@ -94,7 +95,7 @@ const Dashboard = () => {
         },
         data: {
            "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": today
+           "end_date": finalDate.format('YYYY-MM-DD')
         }
       };
 
@@ -111,18 +112,29 @@ const Dashboard = () => {
       };
     
   
+  const isDateValid = (date) => {
+    const currentDate = new Date();
+    return date && date.isAfter(currentDate, 'day');
+  };  
+
+
+  const handleChangeInitialDate = (date) => {
+     setInitialDate(date);
+     console.log(initialDate);  
+  }
+
+
+  const handleChangeFinalDate = (date) => {
+     setFinalDate(date);
+     console.log(finalDate);  
+  }
+
 
   useEffect(() => {
     fetchDataState();
     fetchDataAttendances();
     fetchDataEvents();
-  }, []);
-
-
-  const isDateValid = (date) => {
-    const currentDate = new Date();
-    return date && date.isAfter(currentDate, 'day');
-  };  
+  }, [initialDate, finalDate]);
 
 
   return (
@@ -134,7 +146,16 @@ const Dashboard = () => {
             label="Desde"
             shouldDisableDate={isDateValid}
             value={initialDate}
-            onChange={(newValue) => setInitialDate(newValue)}
+            onChange={handleChangeInitialDate}
+          />
+        </div>
+        
+        <div style={{ margin: '30px', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
+          <DatePicker 
+            label="Hasta"
+            shouldDisableDate={isDateValid}
+            value={finalDate}
+            onChange={handleChangeFinalDate}
           />
         </div>
 
