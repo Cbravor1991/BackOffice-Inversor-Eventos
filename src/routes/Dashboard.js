@@ -141,65 +141,51 @@ const Dashboard = () => {
     <div>
       <Navbar />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div style={{ margin: '30px', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
-          <DatePicker 
-            label="Desde"
-            shouldDisableDate={isDateValid}
-            value={initialDate}
-            onChange={handleChangeInitialDate}
-          />
-        </div>
-        
-        <div style={{ margin: '30px', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
-          <DatePicker 
-            label="Hasta"
-            shouldDisableDate={isDateValid}
-            value={finalDate}
-            onChange={handleChangeFinalDate}
-          />
+        <div style={{ margin: '10px', display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
+          <div style= {{ marginRight: '90px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
+            Desde:
+            <DatePicker 
+              shouldDisableDate={isDateValid}
+              value={initialDate}
+              onChange={handleChangeInitialDate}
+              slotProps={{ textField: { size: 'small' } }}
+            />
+          </div>
+          <div style= {{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
+            Hasta:
+            <DatePicker 
+              shouldDisableDate={isDateValid}
+              value={finalDate}
+              onChange={handleChangeFinalDate}
+              slotProps={{ textField: { size: 'small' } }}
+            />
+          </div>
         </div>
 
-        <Grid container justifyContent={'center'}>
-          <Grid item xs={6}>
-            <Paper style={{ margin: '30px', marginTop: 0, padding: "20px", color: 'grey' }} elevation={4}>
-            <HighchartsReact
-              options={{
-                chart: { type: "pie" },
-                title: { text: 'Estado de eventos' },
-                series: [{
-                  name: 'Estados',
-                  data: dataState
-                }]            
-              }}
-              highcharts={Highcharts}
-            />
+        <Grid container justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 2, md: 3 }}>
+          <Grid item xs={3}>
+            <Paper style={{ display: 'flex', justifyContent: 'center', padding: "5px", color: 'grey' }} elevation={3}>
+              <HighchartsReact
+                options={{
+                  chart: { 
+                    type: "pie",
+                    height: 310,
+                    width: 300,
+                  },
+                  title: { text: 'Estado de eventos' },
+                  series: [{
+                    name: 'Estados',
+                    data: dataState
+                  }]            
+                }}
+                highcharts={Highcharts}
+              />
             </Paper>
           </Grid>
 
-          <Grid item xs={12} s>
-            <Paper style={{ margin: '30px', marginTop: 0, padding: "20px", color: 'grey' }} elevation={4}>
-            <HighchartsReact
-              options={{
-                chart: { type: 'column' },
-                title: { text: 'Acreditaciones a lo largo del tiempo' },
-                xAxis: {
-                  categories: categoriesAttendances
-                },            
-                yAxis: {
-                  title: {
-                    text: 'Acreditaciones'
-                  }
-                },            
-                series: [{
-                  name: 'Acreditaciones',
-                  data: dataAttendances
-                }],
-              }}
-              highcharts={Highcharts}
-            />
-
-            <div style={{ margin: '5px', display: 'flex', justifyContent: 'center' }}>
-              <FormControl sx={{ minWidth: 100 }} size="small">
+          <Grid item xs={6} s>
+            <Paper style={{ position: 'relative', padding: "5px", color: 'grey' }} elevation={3}>
+              <FormControl sx={{ zIndex: 100, minWidth: 100, position: 'absolute', top: '2%', right: '4%' }} size="small">
                 <InputLabel id="unit">Unidad</InputLabel>
                 <Select
                   labelId="unit"
@@ -213,15 +199,34 @@ const Dashboard = () => {
                   <MenuItem value={3}>Año</MenuItem>
                 </Select>
               </FormControl>
-            </div>
+
+              <HighchartsReact
+                options={{
+                  chart: { type: 'column', height: 310 },
+                  title: { text: 'Acreditaciones a lo largo del tiempo' },
+                  xAxis: {
+                    categories: categoriesAttendances
+                  },            
+                  yAxis: {
+                    title: {
+                      text: 'Acreditaciones'
+                    }
+                  },            
+                  series: [{
+                    name: 'Acreditaciones',
+                    data: dataAttendances
+                  }],
+                }}
+                highcharts={Highcharts}
+              />
             </Paper>
           </Grid>
 
-          <Grid item xs={12} s>
-            <Paper style={{ margin: '30px', marginTop: 0, padding: "20px", color: 'grey' }} elevation={4}>
+          <Grid item xs={6} s>
+            <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
             <HighchartsReact
               options={{
-                chart: { type: 'line' },
+                chart: { type: 'line', height: 310 },
                 title: { text: 'Eventos a lo largo del tiempo' },
                 series: [{
                   name: 'Eventos',
