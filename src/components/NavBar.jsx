@@ -1,22 +1,12 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { Button, Grid } from '@mui/material';
-
-
+import { Button, Tabs, Tab, Typography, Box, AppBar, Container, Toolbar } from '@mui/material';
 
 function ResponsiveAppBar() {
-
-
   const handleLogout = (event) => {
     window.localStorage.setItem('token','')
     window.location.href = '/home'
-  
-    
   };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -25,7 +15,7 @@ function ResponsiveAppBar() {
             variant="h5"
             noWrap
             component="a"
-            href="/eventList"
+            href="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
