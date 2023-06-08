@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import Navbar from '../components/NavBar';
-import { Grid, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Grid, Button, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -128,6 +128,11 @@ const Dashboard = () => {
      setFinalDate(date);
      console.log(finalDate);  
   }
+  
+  
+  const handleBack = () => {
+    window.history.back();
+  }
 
 
   useEffect(() => {
@@ -247,6 +252,17 @@ const Dashboard = () => {
           </Grid>
         </Grid>
       </LocalizationProvider>
+      
+      <Grid container sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px', alignItems: 'center', textAlign: 'center' }} >
+        <Button onClick={() => { handleBack() }} sx={{
+          fontFamily: "'Circular Std', Arial, sans-serif", justifyContent: 'center',
+          fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: '#1286f7', borderRadius: 2, px: 2, py: 1, '&:hover': { backgroundColor: '#1c1c1c' }
+        }}>
+          Volver
+        </Button>
+      </Grid>
+
+      
     </div>
   )
 };
