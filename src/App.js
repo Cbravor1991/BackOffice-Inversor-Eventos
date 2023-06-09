@@ -9,6 +9,7 @@ import View from './routes/View';
 import MadeComplainantsUsers from './routes/MadeComplaintsUsers';
 import ShownDenouncesPerUser from './routes/ShownDenouncesPerUser';
 import Dashboard from './routes/Dashboard';
+import ShowOrganizers from './routes/ShowOrganizers';
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="eventUserCompalints" element={<MadeComplainantsUsers />} />
             <Route path="shownDenouncesPerUser" element={<ShownDenouncesPerUser />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="organizers" element={<ShowOrganizers />} />
           </Route>
         </Route>
       </Routes>

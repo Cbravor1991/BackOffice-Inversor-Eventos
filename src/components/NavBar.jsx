@@ -61,10 +61,17 @@ function ResponsiveAppBar() {
             </Button>
 
             <Button
+              onClick={() => { window.location.href = '/organizers' }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Organizadores
+            </Button>
+
+            <Button
               onClick={() => { window.location.href = '/dashboard' }}
               sx={{ my: 2, color: 'white', display: 'block' }}
             >
-              Métricas
+              Gráficos
             </Button>
           </Box>
 
