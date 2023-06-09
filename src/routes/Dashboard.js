@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import Navbar from '../components/NavBar';
-import { Grid, Button, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Grid, Paper, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -22,116 +22,111 @@ const Dashboard = () => {
   const [categoriesAttendances, setCategoriesAttendances] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
   const [dataEvents, setDataEvents] = useState([10, 20, 30, 40, 50, 60]);
   const [categoriesEvents, setCategoriesEvents] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
-  
-  
+
+
   console.log(window.localStorage.getItem("token"));
-  
-  
+
+
   const fetchDataState = async () => {
-      console.log(today);
-      console.log(initialDate.format('YYYY-MM-DD'));
-      
-      var options = {
-        method: 'GET',
-        url: 'admin/event/statistics/state',
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
-        },
-        params: {
-           "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": finalDate.format('YYYY-MM-DD')
+    console.log(today);
+    console.log(initialDate.format('YYYY-MM-DD'));
+
+    var options = {
+      method: 'GET',
+      url: 'admin/event/statistics/state',
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+      },
+      params: {
+        "init_date": initialDate.format('YYYY-MM-DD'),
+        "end_date": finalDate.format('YYYY-MM-DD')
+      }
+    };
+
+    console.log(options);
+
+    axios(options)
+      .then(function (response) {
+        setDataState([]);
+        console.log(response.data);
+        for (let i in response.data) {
+          setDataState(dataState => [...dataState, ({ "name": i, "y": response.data[i] })]);
         }
-      };
+      })
+  };
 
-      console.log(options);
 
-      axios(options)
-      .then (function (response) {
-             setDataState([]);
-             console.log(response.data);
-             for(let i in response.data){
-              setDataState(dataState => [...dataState, ({"name":i,"y":response.data[i]})]);
-             }
-             })    
-   };
-    
-    
   const fetchDataAttendances = async () => {
-      var options = {
-        method: 'GET',
-        url: '/admin/attendances/statistics/distribution',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
-        },
-        params: {
-           "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": finalDate.format('YYYY-MM-DD')
-        }
-      };
+    var options = {
+      method: 'GET',
+      url: '/admin/attendances/statistics/distribution',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+      },
+      params: {
+        "init_date": initialDate.format('YYYY-MM-DD'),
+        "end_date": finalDate.format('YYYY-MM-DD')
+      }
+    };
 
-      axios(options)
-      .then (function (response) {
-             setDataAttendances([]);
-             setCategoriesAttendances([]);
-             console.log(response.data);
-             for(let i in response.data){
-              setDataAttendances(dataAttendances => [...dataAttendances, i]);
-              setCategoriesAttendances(categoriesAttendances => [...categoriesAttendances, response.data[i]]);
-             }
-             })    
-     };
-    
-    
-   const fetchDataEvents = async () => {
-      var options = {
-        method: 'GET',
-        url: '/admin/events/statistics/distribution',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + window.localStorage.getItem("token")
-        },
-        params: {
-           "init_date": initialDate.format('YYYY-MM-DD'),
-           "end_date": finalDate.format('YYYY-MM-DD')
+    axios(options)
+      .then(function (response) {
+        setDataAttendances([]);
+        setCategoriesAttendances([]);
+        console.log(response.data);
+        for (let i in response.data) {
+          setDataAttendances(dataAttendances => [...dataAttendances, i]);
+          setCategoriesAttendances(categoriesAttendances => [...categoriesAttendances, response.data[i]]);
         }
-      };
+      })
+  };
 
-      axios(options)
-      .then (function (response) {
-             setDataEvents([]);
-             setCategoriesEvents([]);
-             console.log(response.data);
-             for(let i in response.data){
-              setDataEvents(dataEvents => [...dataEvents, i]);
-              setCategoriesEvents(categoriesEvents => [...categoriesEvents, response.data[i]]);
-             }
-             })    
-      };
-    
-  
+
+  const fetchDataEvents = async () => {
+    var options = {
+      method: 'GET',
+      url: '/admin/events/statistics/distribution',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+      },
+      params: {
+        "init_date": initialDate.format('YYYY-MM-DD'),
+        "end_date": finalDate.format('YYYY-MM-DD')
+      }
+    };
+
+    axios(options)
+      .then(function (response) {
+        setDataEvents([]);
+        setCategoriesEvents([]);
+        console.log(response.data);
+        for (let i in response.data) {
+          setDataEvents(dataEvents => [...dataEvents, i]);
+          setCategoriesEvents(categoriesEvents => [...categoriesEvents, response.data[i]]);
+        }
+      })
+  };
+
+
   const isDateValid = (date) => {
     const currentDate = new Date();
     return date && date.isAfter(currentDate, 'day');
-  };  
+  };
 
 
   const handleChangeInitialDate = (date) => {
-     setInitialDate(date);
-     console.log(initialDate);  
+    setInitialDate(date);
+    console.log(initialDate);
   }
 
 
   const handleChangeFinalDate = (date) => {
-     setFinalDate(date);
-     console.log(finalDate);  
-  }
-  
-  
-  const handleBack = () => {
-    window.history.back();
+    setFinalDate(date);
+    console.log(finalDate);
   }
 
 
@@ -146,19 +141,19 @@ const Dashboard = () => {
     <div>
       <Navbar />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div style={{ margin: '10px', display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
-          <div style= {{ marginRight: '90px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
+        <div style={{ margin: '10px', display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
+          <div style={{ marginRight: '90px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
             Desde:
-            <DatePicker 
+            <DatePicker
               shouldDisableDate={isDateValid}
               value={initialDate}
               onChange={handleChangeInitialDate}
               slotProps={{ textField: { size: 'small' } }}
             />
           </div>
-          <div style= {{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: 300 }}>
             Hasta:
-            <DatePicker 
+            <DatePicker
               shouldDisableDate={isDateValid}
               value={finalDate}
               onChange={handleChangeFinalDate}
@@ -167,12 +162,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <Grid container justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 2, md: 3 }}>
+        <Grid container style={{padding: '10px', paddingTop: 0, paddingBottom: 0}} justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1, md: 1 }}>
           <Grid item xs={3}>
             <Paper style={{ display: 'flex', justifyContent: 'center', padding: "5px", color: 'grey' }} elevation={3}>
               <HighchartsReact
                 options={{
-                  chart: { 
+                  chart: {
                     type: "pie",
                     height: 310,
                     width: 300,
@@ -181,7 +176,7 @@ const Dashboard = () => {
                   series: [{
                     name: 'Estados',
                     data: dataState
-                  }]            
+                  }]
                 }}
                 highcharts={Highcharts}
               />
@@ -194,7 +189,7 @@ const Dashboard = () => {
                 <InputLabel id="unit">Unidad</InputLabel>
                 <Select
                   labelId="unit"
-                  id="unit"              
+                  id="unit"
                   label="Unidad"
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
@@ -211,12 +206,12 @@ const Dashboard = () => {
                   title: { text: 'Acreditaciones a lo largo del tiempo' },
                   xAxis: {
                     categories: categoriesAttendances
-                  },            
+                  },
                   yAxis: {
                     title: {
                       text: 'Acreditaciones'
                     }
-                  },            
+                  },
                   series: [{
                     name: 'Acreditaciones',
                     data: dataAttendances
@@ -229,25 +224,98 @@ const Dashboard = () => {
 
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
-            <HighchartsReact
-              options={{
-                chart: { type: 'line', height: 310 },
-                title: { text: 'Eventos a lo largo del tiempo' },
-                series: [{
-                  name: 'Eventos',
-                  data: dataEvents
-                }],
-                xAxis: {
-                  categories: categoriesEvents,
-                },
-                yAxis: {
-                  title: {
-                    text: 'Eventos'
-                  }
-                },  
-              }}
-              highcharts={Highcharts}
-            />
+              <HighchartsReact
+                options={{
+                  chart: { type: 'line', height: 310 },
+                  title: { text: 'Eventos a lo largo del tiempo' },
+                  series: [{
+                    name: 'Eventos',
+                    data: dataEvents
+                  }],
+                  xAxis: {
+                    categories: categoriesEvents,
+                  },
+                  yAxis: {
+                    title: {
+                      text: 'Eventos'
+                    }
+                  },
+                }}
+                highcharts={Highcharts}
+              />
+            </Paper>
+          </Grid>
+
+          <Grid item xs={6} s>
+            <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
+              <HighchartsReact
+                options={{
+                  chart: {
+                    scrollablePlotArea: {
+                      minWidth: 700
+                    },
+                    height: 310
+                  },
+
+                  data: [],
+
+                  title: { text: 'Denuncias a lo largo del tiempo' },
+
+                  xAxis: {
+                    tickInterval: 7 * 24 * 3600 * 1000, // one week
+                    tickWidth: 0,
+                    gridLineWidth: 1,
+                    labels: {
+                      align: 'left',
+                      x: 3,
+                      y: -3
+                    }
+                  },
+
+                  yAxis: [{ // left y axis
+                    title: {
+                      text: null
+                    },
+                    labels: {
+                      align: 'left',
+                      x: 3,
+                      y: 16,
+                      format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                  }, { // right y axis
+                    linkedTo: 0,
+                    gridLineWidth: 0,
+                    opposite: true,
+                    title: {
+                      text: null
+                    },
+                    labels: {
+                      align: 'right',
+                      x: -3,
+                      y: 16,
+                      format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                  }],
+
+                  tooltip: {
+                    shared: true,
+                    crosshairs: true
+                  },
+
+                  series: [{
+                    name: 'Denuncias',
+                    lineWidth: 3,
+                    marker: {
+                      radius: 4
+                    }
+                  }, {
+                    name: 'Suspensiones'
+                  }]
+                }}
+                highcharts={Highcharts}
+              />
             </Paper>
           </Grid>
         </Grid>
