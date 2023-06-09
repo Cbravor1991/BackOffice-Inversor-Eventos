@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Tabs, Tab, Typography, Box, AppBar, Container, Toolbar } from '@mui/material';
+import { Button, Typography, Box, AppBar, Container, Toolbar } from '@mui/material';
 
 function ResponsiveAppBar() {
   const handleLogout = (event) => {
@@ -45,17 +45,36 @@ function ResponsiveAppBar() {
           >
             TicketApp
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, marginLeft: 4, display: { xs: 'none', md: 'flex' } }}>
+            <Button
+              onClick={() => { window.location.href = '/complaints' }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Denuncias
+            </Button>
+
+            <Button
+              onClick={() => { window.location.href = '/complainants' }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Usuarios
+            </Button>
+
+            <Button
+              onClick={() => { window.location.href = '/dashboard' }}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Métricas
+            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', justifyContent: 'right', color:'black' } }}>
-        <Button onClick={() => { handleLogout() }} sx={{ fontFamily: "'Circular Std', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: '#fff',
-         justifyContent: 'left', backgroundColor: 'black', borderRadius: 2, px: 4, py: 1, '&:hover': { backgroundColor: '#1286f7' } }}>
-         Logout
-        </Button>
-        </Box>
+            <Button onClick={() => { handleLogout() }} sx={{ fontFamily: "'Circular Std', Arial, sans-serif", fontSize: 14, fontWeight: 700, color: '#fff',
+            justifyContent: 'left', backgroundColor: 'black', borderRadius: 2, px: 4, py: 1, '&:hover': { backgroundColor: '#1286f7' } }}>
+            Logout
+            </Button>
+          </Box>
 
-       
         </Toolbar>
       </Container>
     </AppBar>

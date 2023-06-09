@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React from 'react';
 import HomePage from './routes/HomePage';
 import ShowsComplaints from './routes/ShowsComplaints';
 import ShowsComplainants from './routes/ShowsComplainants';
@@ -9,7 +9,6 @@ import View from './routes/View';
 import MadeComplainantsUsers from './routes/MadeComplaintsUsers';
 import ShownDenouncesPerUser from './routes/ShownDenouncesPerUser';
 import Dashboard from './routes/Dashboard';
-import Menu from './routes/Menu';
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -29,7 +28,6 @@ function App() {
             <Route path="eventUserCompalints" element={<MadeComplainantsUsers />} />
             <Route path="shownDenouncesPerUser" element={<ShownDenouncesPerUser />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="menu" element={<Menu />} />
           </Route>
         </Route>
       </Routes>

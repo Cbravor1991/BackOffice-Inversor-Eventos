@@ -405,14 +405,6 @@ export default function ShowsComplainants() {
           </TableContainer>
         </Paper>
       </Grid>
-      <Grid container sx={{ display: 'flex', marginLeft: '20px', alignItems: 'center', textAlign: 'center' }} >
-        <Button onClick={() => { handleBack() }} sx={{
-          fontFamily: "'Circular Std', Arial, sans-serif", justifyContent: 'center',
-          fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: '#1286f7', borderRadius: 2, px: 2, py: 1, '&:hover': { backgroundColor: '#1c1c1c' }
-        }}>
-          Volver
-        </Button>
-      </Grid>
     </div>
   );
 }

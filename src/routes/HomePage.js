@@ -37,7 +37,7 @@ const HomePage = () => {
   
  
     window.localStorage.setItem('token',response.data.access_token )
-    window.location.href='/menu'
+    window.location.href='/complaints'
  
    
  } )
