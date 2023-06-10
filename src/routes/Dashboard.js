@@ -18,13 +18,14 @@ const Dashboard = () => {
   const [finalDate, setFinalDate] = useState(dayjs(today));
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
-  const [dataAttendances, setDataAttendances] = useState([10, 20, 30, 40, 50, 60]);
-  const [categoriesAttendances, setCategoriesAttendances] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
-  const [dataEvents, setDataEvents] = useState([10, 20, 30, 40, 50, 60]);
-  const [categoriesEvents, setCategoriesEvents] = useState(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
+  const [dataAttendances, setDataAttendances] = useState([]);
+  const [categoriesAttendances, setCategoriesAttendances] = useState([]);
+  const [dataEvents, setDataEvents] = useState([]);
+  const [categoriesEvents, setCategoriesEvents] = useState([]);
 
 
   console.log(window.localStorage.getItem("token"));
+
 
 
   const fetchDataState = async () => {
@@ -47,18 +48,25 @@ const Dashboard = () => {
 
     console.log(options);
 
-    axios(options)
-      .then(function (response) {
-        setDataState([]);
-        console.log(response.data);
-        for (let i in response.data) {
-          setDataState(dataState => [...dataState, ({ "name": i, "y": response.data[i] })]);
-        }
-      })
+    try {
+      const response = await axios(options);
+      const newDataState = [];
+
+      for (let [key, value] of Object.entries(response.data)) {
+        newDataState.push({ "name": value.state, "y": value.amount });
+      }
+
+      setDataState(newDataState);
+
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+    }
   };
 
 
   const fetchDataAttendances = async () => {
+    console.log(finalDate.format('YYYY-MM-DD'))
+    const data_Attendances = []
     var options = {
       method: 'GET',
       url: '/admin/attendances/statistics/distribution',
@@ -72,20 +80,55 @@ const Dashboard = () => {
       }
     };
 
-    axios(options)
+    await axios(options)
       .then(function (response) {
-        setDataAttendances([]);
-        setCategoriesAttendances([]);
-        console.log(response.data);
-        for (let i in response.data) {
-          setDataAttendances(dataAttendances => [...dataAttendances, i]);
-          setCategoriesAttendances(categoriesAttendances => [...categoriesAttendances, response.data[i]]);
+
+
+        if (response.data.length >0){
+        const months = [
+          'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+          'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+        ];
+        console.log(response.data)
+
+        const startMonthString = response.data[0].date;
+        const endMonthString = response.data[response.data.length - 1].date;
+        const startMonth = parseInt(startMonthString.substring(5));
+        const endMonth = parseInt(endMonthString.substring(5));
+        const attendancesMonths = months.slice(0, endMonth);
+
+        setCategoriesAttendances(attendancesMonths);
+
+        for (let i in attendancesMonths) {
+
+          data_Attendances.push(0)
         }
+
+        for (let i in response.data) {
+          for (let j in data_Attendances) {
+            if (((parseInt(response.data[i].date.substring(5)) - 1)) == j) {
+              data_Attendances[j] = response.data[i].attendances
+            }
+          }
+        }
+        setDataAttendances(data_Attendances)} 
+        else{
+          
+          setDataAttendances([]);
+          setCategoriesAttendances([]);
+
+
+        } 
+     
+     
+     
+     
       })
   };
 
 
   const fetchDataEvents = async () => {
+    const data_Events = []
     var options = {
       method: 'GET',
       url: '/admin/events/statistics/distribution',
@@ -101,13 +144,40 @@ const Dashboard = () => {
 
     axios(options)
       .then(function (response) {
-        setDataEvents([]);
-        setCategoriesEvents([]);
-        console.log(response.data);
-        for (let i in response.data) {
-          setDataEvents(dataEvents => [...dataEvents, i]);
-          setCategoriesEvents(categoriesEvents => [...categoriesEvents, response.data[i]]);
+        if (response.data.length >0){
+        const months = [
+          'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+          'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+        ];
+
+        const startMonthString = response.data[0].date;
+        const endMonthString = response.data[response.data.length - 1].date;
+        const startMonth = parseInt(startMonthString.substring(5));
+        const endMonth = parseInt(endMonthString.substring(5));
+        const eventsMonths = months.slice(0, endMonth);
+
+        setCategoriesEvents(eventsMonths);
+
+        for (let i in eventsMonths) {
+
+          data_Events.push(0)
         }
+
+        for (let i in response.data) {
+          for (let j in data_Events) {
+            if (((parseInt(response.data[i].date.substring(5)) - 1)) == j) {
+              data_Events[j] = response.data[i].events
+            }
+          }
+        }
+        setDataEvents(data_Events)} 
+        else{
+          
+          setCategoriesEvents([]);
+          setDataEvents([]);
+
+
+        } 
       })
   };
 
@@ -131,9 +201,9 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    fetchDataState();
-    fetchDataAttendances();
-    fetchDataEvents();
+   fetchDataState();
+   fetchDataAttendances();
+   fetchDataEvents();
   }, [initialDate, finalDate]);
 
 
@@ -162,7 +232,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <Grid container style={{padding: '10px', paddingTop: 0, paddingBottom: 0}} justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1, md: 1 }}>
+        <Grid container style={{ padding: '10px', paddingTop: 0, paddingBottom: 0 }} justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1, md: 1 }}>
           <Grid item xs={3}>
             <Paper style={{ display: 'flex', justifyContent: 'center', padding: "5px", color: 'grey' }} elevation={3}>
               <HighchartsReact
@@ -184,23 +254,9 @@ const Dashboard = () => {
           </Grid>
 
           <Grid item xs={6} s>
+          {console.log('en el pie =>',dataAttendances)}
             <Paper style={{ position: 'relative', padding: "5px", color: 'grey' }} elevation={3}>
-              <FormControl sx={{ zIndex: 100, minWidth: 100, position: 'absolute', top: '2%', right: '4%' }} size="small">
-                <InputLabel id="unit">Unidad</InputLabel>
-                <Select
-                  labelId="unit"
-                  id="unit"
-                  label="Unidad"
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                >
-                  <MenuItem value={1}>Dia</MenuItem>
-                  <MenuItem value={2}>Mes</MenuItem>
-                  <MenuItem value={3}>Año</MenuItem>
-                </Select>
-              </FormControl>
-
-              <HighchartsReact
+             <HighchartsReact
                 options={{
                   chart: { type: 'column', height: 310 },
                   title: { text: 'Acreditaciones a lo largo del tiempo' },
@@ -215,6 +271,7 @@ const Dashboard = () => {
                   series: [{
                     name: 'Acreditaciones',
                     data: dataAttendances
+                   
                   }],
                 }}
                 highcharts={Highcharts}

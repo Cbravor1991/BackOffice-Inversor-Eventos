@@ -51,7 +51,7 @@ export default function ShowsComplainants() {
   const [organizers, setOrganizers] = useState([]);
   const [initialDate, setInitialDate] = useState('2023-04-01');
 
-  let today = moment().add(1, 'days').format('YYYY-MM-DD');
+  let today = moment().format('YYYY-MM-DD');
   const [finalDate, setFinalDate] = useState(today);
 
   
