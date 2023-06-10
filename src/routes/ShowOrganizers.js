@@ -18,6 +18,10 @@ import { Button, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import axios from '../api/axios';
 import { Link } from 'react-router-dom';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import moment from "moment";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -43,9 +47,19 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 export default function ShowsComplainants() {
+
   const [organizers, setOrganizers] = useState([]);
+  const [initialDate, setInitialDate] = useState('2023-04-01');
+
+  let today = moment().add(1, 'days').format('YYYY-MM-DD');
+  const [finalDate, setFinalDate] = useState(today);
+
+  
+
 
   const loadOrganizers = async () => {
+    console.log(initialDate)
+    console.log(finalDate)
     const load = [];
 
     let token_user;
@@ -63,37 +77,45 @@ export default function ShowsComplainants() {
       "Access-Control-Allow-Credentials": true,
       "Access-Control-Allow-Headers": "*",
       Authorization: "Bearer " + token_user,
+    }
+    const params= {
+      "init_date":initialDate,
+      "end_date": finalDate ,
     };
 
     try {
       const response = await axios({
         method: "get",
-        url: "/admin/complaints/users/ranking",
+        url: "/admin/events/organizers/ranking",
         headers: headers,
+        params: params,
+ 
       });
 
       const response_2 = await axios({
         method: "get",
-        url: "/admin/complaints",
+        url: "/admin/attendances/organizers/ranking",
         headers: headers,
+        params: params,
       });
 
       const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
 
       const promises = response.data.map(async (item, index) => {
-        if (!processedUsers.has(item.id)) { // Verificar si el usuario ya ha sido procesado
-          processedUsers.add(item.id); // Marcar el usuario como procesado
+        if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
+          processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
 
           const matchingComplaints = response_2.data.filter(
-            (item_2) => item.id === item_2.Complaint.user_id
+            (item_2) => item.organizer_email === item_2.organizer_email,
+       
           );
 
           if (matchingComplaints.length > 0) {
             const event = {
-              email: item.email,
-              name: matchingComplaints[0].User.name,
-              numberComplaints: item.denounce,
-              state: item.suspended,
+              organizer_email: item.organizer_email,
+              amount: item.amount,
+              attendances: matchingComplaints[0].attendances,
+          
             };
 
             load.push(event);
@@ -101,9 +123,10 @@ export default function ShowsComplainants() {
         }
       });
 
-      await Promise.all(promises); // Esperar a que se completen todas las promesas
+      await Promise.all(promises); // Esperar a que se completen todas las promesas 
 
       setOrganizers(load);
+    
     } catch (error) {
       console.log(error);
     }
@@ -121,22 +144,33 @@ export default function ShowsComplainants() {
 
   const [searchText, setSearchText] = React.useState('');
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [sorting, setStorting] = React.useState('events');
+  const [sortingColumn, setSortingColumn] = useState('events');
+  const [sortingDirection, setSortingDirection] = useState('desc');
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
   };
 
-  const handleSortingChange = (event) => {
-    setStorting(event.target.value);
+  const handleSortingColumnChange = (event) => {
+    setSortingColumn(event.target.value);
   };
 
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
 
-  const filteredData = organizers.filter((row) =>
-    row.email.toLowerCase().includes(searchText.toLowerCase())
+  const sortedData = [...organizers];
+  sortedData.sort((a, b) => {
+    if (sortingColumn === 'events') {
+      return sortingDirection === 'asc' ? a.amount - b.amount : b.amount - a.amount;
+    } else if (sortingColumn === 'people') {
+      return sortingDirection === 'asc' ? a.attendances - b.attendances : b.attendances - a.attendances;
+    }
+    return 0;
+  });
+
+  const filteredData = sortedData.filter((row) =>
+    row.organizer_email.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -149,7 +183,7 @@ export default function ShowsComplainants() {
         <Paper sx={{ width: '100%' }} elevation={5}>
           <TableContainer component={Grid}>
             <div>
-              <FormControl sx={{ m: 1, minWidth: 120 }}>
+            <FormControl sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id="demo-simple-select-label">Mostrar</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -172,20 +206,20 @@ export default function ShowsComplainants() {
                 onChange={handleSearchChange}
               />
 
-              <FormControl sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-label">Ordenar por</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={sorting}
-                  label="Mostrar"
-                  onChange={handleSortingChange}
-                >
-                  <MenuItem sx={{ color: 'black' }} value={'events'}>Eventos creados</MenuItem>
-                  <MenuItem sx={{ color: 'black' }} value={'people'}>Acreditaciones</MenuItem>
-
-                </Select>
-              </FormControl>
+               <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-label">Ordenar por</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sortingColumn}
+          label="Ordenar por"
+          onChange={handleSortingColumnChange}
+        >
+          <MenuItem sx={{ color: 'black' }} value={'events'}>Eventos creados</MenuItem>
+          <MenuItem sx={{ color: 'black' }} value={'people'}>Acreditaciones</MenuItem>
+        </Select>
+      </FormControl>
+    
 
             </div>
 
@@ -206,15 +240,15 @@ export default function ShowsComplainants() {
                       {filteredData
                         .slice(0, rowsPerPage)
                         .map((row) => (
-                          <StyledTableRow key={row.name}>
+                          <StyledTableRow key={row.organizer_email}>
                             <StyledTableCell component="th" scope="row">
-                              {row.email}
+                              {row.organizer_email}
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                              {row.events}
+                              {row.amount}
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                              {row.acreditaciones}
+                              {row.attendances}
                             </StyledTableCell>
                           </StyledTableRow>
                         ))
