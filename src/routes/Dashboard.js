@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [dateGrapics, setDateGrapics] = useState([]);
   const [dataComplaints, setDataComplaints] = useState([]);
   const [dataSuspensions, setDataSuspensions] = useState([]);
+  const [graphSize, setGraphSize] = useState((window.innerHeight - 180.5) / 2);
 
   console.log(window.localStorage.getItem("token"));
 
@@ -359,6 +360,9 @@ const Dashboard = () => {
 
   }
 
+  const handleResize = () => {
+    setGraphSize((window.innerHeight - 180.5) / 2);
+  };
 
   useEffect(() => {
     chargeDate();
@@ -367,8 +371,9 @@ const Dashboard = () => {
     fetchDataEvents();
     fetchDataComplaints();
     fetchDataSuspension();
-  }, [initialDate, finalDate]);
 
+    window.addEventListener('resize', handleResize);
+  }, [initialDate, finalDate]);
 
   return (
     <div>
@@ -402,7 +407,7 @@ const Dashboard = () => {
                 options={{
                   chart: {
                     type: "pie",
-                    height: 310,
+                    height: graphSize,
                     width: 300,
                   },
                   title: { text: 'Estado de eventos' },
@@ -420,7 +425,7 @@ const Dashboard = () => {
             <Paper style={{ position: 'relative', padding: "5px", color: 'grey' }} elevation={3}>
               <HighchartsReact
                 options={{
-                  chart: { type: 'column', height: 310 },
+                  chart: { type: 'column', height: graphSize },
                   title: { text: 'Acreditaciones a lo largo del tiempo' },
                   xAxis: {
                     categories: dateGrapics
@@ -445,7 +450,7 @@ const Dashboard = () => {
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
               <HighchartsReact
                 options={{
-                  chart: { type: 'line', height: 310 },
+                  chart: { type: 'line', height: graphSize },
                   title: { text: 'Eventos a lo largo del tiempo' },
                   series: [{
                     name: 'Eventos',
@@ -472,7 +477,7 @@ const Dashboard = () => {
                     scrollablePlotArea: {
                       minWidth: 700
                     },
-                    height: 310
+                    height: graphSize
                   },
                   title: { text: 'Denuncias a lo largo del tiempo' },
                   xAxis: {
