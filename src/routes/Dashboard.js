@@ -22,15 +22,93 @@ const Dashboard = () => {
   const [categoriesAttendances, setCategoriesAttendances] = useState([]);
   const [dataEvents, setDataEvents] = useState([]);
   const [categoriesEvents, setCategoriesEvents] = useState([]);
-
+  const [categoriesComplaints, setCategoriesComplaints] = useState([]);
+  let dateCategories;
+  const [dateGrapics, setDateGrapics] = useState([]);
+  const [dataComplaints, setDataComplaints] = useState([]);
+  const [dataSuspensions, setDataSuspensions] = useState([]);
 
   console.log(window.localStorage.getItem("token"));
 
 
+  const verifyMonth = async (month) => {
+    let target;
+
+    const months_ = [
+      'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+      'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+    ];
+
+
+    if (month >= 1 && month <= 12) {
+      target = months_[month - 1];
+      console.log('el taget es =>', target)
+
+
+    } else {
+      return 'Invalid month';
+    }
+
+    for (let i in dateCategories) {
+      if (target == dateCategories[i]) {
+        console.log('encontro')
+        return i;
+      }
+    }
+
+  }
+
+
+
+
+
+  const chargeDate = async () => {
+    const months = [
+      'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+      'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+    ];
+
+    const initialMonth = parseInt(initialDate.format('MM'));
+    const initialYear = parseInt(initialDate.format('YYYY'));
+    const finalMonth = parseInt(finalDate.format('MM'));
+    const finalYear = parseInt(finalDate.format('YYYY'));
+
+    const categories = new Set();
+
+    if (initialYear === finalYear) {
+      for (let month = initialMonth; month <= finalMonth; month++) {
+        const monthName = months[month - 1];
+        categories.add(monthName);
+      }
+    } else {
+      for (let year = initialYear; year <= finalYear; year++) {
+        const startMonth = (year === initialYear) ? initialMonth : 1;
+        const endMonth = (year === finalYear) ? finalMonth : 12;
+
+        for (let month = startMonth; month <= endMonth; month++) {
+          const monthName = months[month - 1];
+          categories.add(monthName);
+        }
+      }
+    }
+
+    const uniqueCategories = Array.from(categories);
+
+    dateCategories = uniqueCategories;
+    setDateGrapics(uniqueCategories);
+
+  };
+
+
+
+
+
+
+
+
 
   const fetchDataState = async () => {
-    console.log(today);
-    console.log(initialDate.format('YYYY-MM-DD'));
+
 
     var options = {
       method: 'GET',
@@ -46,7 +124,6 @@ const Dashboard = () => {
       }
     };
 
-    console.log(options);
 
     try {
       const response = await axios(options);
@@ -65,7 +142,7 @@ const Dashboard = () => {
 
 
   const fetchDataAttendances = async () => {
-    console.log(finalDate.format('YYYY-MM-DD'))
+
     const data_Attendances = []
     var options = {
       method: 'GET',
@@ -81,48 +158,47 @@ const Dashboard = () => {
     };
 
     await axios(options)
-      .then(function (response) {
+      .then(async function (response) {
 
 
-        if (response.data.length >0){
-        const months = [
-          'ene', 'feb', 'mar', 'abr', 'may', 'jun',
-          'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
-        ];
-        console.log(response.data)
+        if (response.data.length > 0) {
 
-        const startMonthString = response.data[0].date;
-        const endMonthString = response.data[response.data.length - 1].date;
-        const startMonth = parseInt(startMonthString.substring(5));
-        const endMonth = parseInt(endMonthString.substring(5));
-        const attendancesMonths = months.slice(0, endMonth);
 
-        setCategoriesAttendances(attendancesMonths);
 
-        for (let i in attendancesMonths) {
+          for (let i in dateCategories) {
 
-          data_Attendances.push(0)
-        }
-
-        for (let i in response.data) {
-          for (let j in data_Attendances) {
-            if (((parseInt(response.data[i].date.substring(5)) - 1)) == j) {
-              data_Attendances[j] = response.data[i].attendances
-            }
+            data_Attendances.push(0)
           }
+
+
+
+          for (let i in response.data) {
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+
+              data_Attendances[position] = data_Attendances[position] + response.data[i].attendances
+
+            }
+
+
+          }
+
+
+
+
+          setDataAttendances(data_Attendances)
         }
-        setDataAttendances(data_Attendances)} 
-        else{
-          
+        else {
+
           setDataAttendances([]);
           setCategoriesAttendances([]);
 
 
-        } 
-     
-     
-     
-     
+        }
+
+
+
+
       })
   };
 
@@ -142,42 +218,126 @@ const Dashboard = () => {
       }
     };
 
-    axios(options)
-      .then(function (response) {
-        if (response.data.length >0){
-        const months = [
-          'ene', 'feb', 'mar', 'abr', 'may', 'jun',
-          'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
-        ];
+    await axios(options)
+      .then(async function (response) {
+        if (response.data.length > 0) {
 
-        const startMonthString = response.data[0].date;
-        const endMonthString = response.data[response.data.length - 1].date;
-        const startMonth = parseInt(startMonthString.substring(5));
-        const endMonth = parseInt(endMonthString.substring(5));
-        const eventsMonths = months.slice(0, endMonth);
 
-        setCategoriesEvents(eventsMonths);
+          for (let i in dateCategories) {
 
-        for (let i in eventsMonths) {
+            data_Events.push(0)
+          }
 
-          data_Events.push(0)
-        }
+          for (let i in response.data) {
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
 
-        for (let i in response.data) {
-          for (let j in data_Events) {
-            if (((parseInt(response.data[i].date.substring(5)) - 1)) == j) {
-              data_Events[j] = response.data[i].events
+              data_Events[position] = data_Events[position] + response.data[i].events
+
             }
           }
+
+          setDataEvents(data_Events)
         }
-        setDataEvents(data_Events)} 
-        else{
-          
+        else {
+
           setCategoriesEvents([]);
           setDataEvents([]);
 
 
-        } 
+        }
+      })
+  };
+
+
+  const fetchDataComplaints = async () => {
+
+    const data_Complaints = []
+    var options = {
+      method: 'GET',
+      url: '/admin/complaints/statistics/distribution',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+      },
+      params: {
+        "init_date": initialDate.format('YYYY-MM-DD'),
+        "end_date": finalDate.format('YYYY-MM-DD')
+      }
+    };
+
+    await axios(options)
+      .then(async function (response) {
+
+        if (response.data.length > 0) {
+          for (let i in dateCategories) {
+
+            data_Complaints.push(0)
+          }
+          for (let i in response.data) {
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+
+              data_Complaints[position] = data_Complaints[position] + response.data[i].complaints
+
+            }
+
+
+          }
+          setDataComplaints(data_Complaints)
+        }
+        else {
+          setDataComplaints([]);
+        }
+      })
+  };
+
+  const fetchDataSuspension = async () => {
+
+    const data_Suspension = []
+    var options = {
+      method: 'GET',
+      url: '/admin/suspensions/statistics/distribution',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.localStorage.getItem("token")
+      },
+      params: {
+        "init_date": initialDate.format('YYYY-MM-DD'),
+        "end_date": finalDate.format('YYYY-MM-DD')
+      }
+    };
+
+    await axios(options)
+      .then(async function (response) {
+        console.log('suspendido=>', response)
+
+
+        if (response.data.length > 0) {
+
+          for (let i in dateCategories) {
+
+            data_Suspension.push(0)
+          }
+          for (let i in response.data) {
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+
+              data_Suspension[position] = data_Suspension[position] + response.data[i].suspensions
+
+            }
+
+
+          }
+          setDataSuspensions(data_Suspension)
+        }
+        else {
+
+
+          setDataSuspensions([]);
+
+
+        }
       })
   };
 
@@ -190,20 +350,23 @@ const Dashboard = () => {
 
   const handleChangeInitialDate = (date) => {
     setInitialDate(date);
-    console.log(initialDate);
+
   }
 
 
   const handleChangeFinalDate = (date) => {
     setFinalDate(date);
-    console.log(finalDate);
+
   }
 
 
   useEffect(() => {
-   fetchDataState();
-   fetchDataAttendances();
-   fetchDataEvents();
+    chargeDate();
+    fetchDataState();
+    fetchDataAttendances();
+    fetchDataEvents();
+    fetchDataComplaints();
+    fetchDataSuspension();
   }, [initialDate, finalDate]);
 
 
@@ -254,14 +417,13 @@ const Dashboard = () => {
           </Grid>
 
           <Grid item xs={6} s>
-          {console.log('en el pie =>',dataAttendances)}
             <Paper style={{ position: 'relative', padding: "5px", color: 'grey' }} elevation={3}>
-             <HighchartsReact
+              <HighchartsReact
                 options={{
                   chart: { type: 'column', height: 310 },
                   title: { text: 'Acreditaciones a lo largo del tiempo' },
                   xAxis: {
-                    categories: categoriesAttendances
+                    categories: dateGrapics
                   },
                   yAxis: {
                     title: {
@@ -271,7 +433,7 @@ const Dashboard = () => {
                   series: [{
                     name: 'Acreditaciones',
                     data: dataAttendances
-                   
+
                   }],
                 }}
                 highcharts={Highcharts}
@@ -290,7 +452,7 @@ const Dashboard = () => {
                     data: dataEvents
                   }],
                   xAxis: {
-                    categories: categoriesEvents,
+                    categories: dateGrapics,
                   },
                   yAxis: {
                     title: {
@@ -302,7 +464,6 @@ const Dashboard = () => {
               />
             </Paper>
           </Grid>
-
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
               <HighchartsReact
@@ -313,13 +474,9 @@ const Dashboard = () => {
                     },
                     height: 310
                   },
-
-                  data: [],
-
                   title: { text: 'Denuncias a lo largo del tiempo' },
-
                   xAxis: {
-                    tickInterval: 7 * 24 * 3600 * 1000, // one week
+                    categories: dateGrapics, // Nombres de los meses
                     tickWidth: 0,
                     gridLineWidth: 1,
                     labels: {
@@ -328,8 +485,7 @@ const Dashboard = () => {
                       y: -3
                     }
                   },
-
-                  yAxis: [{ // left y axis
+                  yAxis: [{
                     title: {
                       text: null
                     },
@@ -340,7 +496,7 @@ const Dashboard = () => {
                       format: '{value:.,0f}'
                     },
                     showFirstLabel: false
-                  }, { // right y axis
+                  }, {
                     linkedTo: 0,
                     gridLineWidth: 0,
                     opposite: true,
@@ -355,26 +511,37 @@ const Dashboard = () => {
                     },
                     showFirstLabel: false
                   }],
-
                   tooltip: {
                     shared: true,
                     crosshairs: true
                   },
-
                   series: [{
                     name: 'Denuncias',
+                    data: dataComplaints, // Ejemplo de datos de prueba
                     lineWidth: 3,
                     marker: {
                       radius: 4
                     }
                   }, {
-                    name: 'Suspensiones'
+                    name: 'Suspensiones',
+                    data: [0, 0, 3] // Ejemplo de datos de prueba
+                    //data: dataSuspensions
                   }]
                 }}
                 highcharts={Highcharts}
               />
             </Paper>
           </Grid>
+
+
+
+
+
+
+
+
+
+
         </Grid>
       </LocalizationProvider>
     </div>
