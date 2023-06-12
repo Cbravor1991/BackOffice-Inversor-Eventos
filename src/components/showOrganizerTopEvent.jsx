@@ -46,13 +46,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function ShowsComplainants() {
+export default function ShowsComplainants(initialDate_, finalDate_) {
 
   const [organizers, setOrganizers] = useState([]);
-  const [initialDate, setInitialDate] = useState('2023-04-01');
+  const [initialDate, setInitialDate] = useState(initialDate_);
 
   let today = moment().format('YYYY-MM-DD');
-  const [finalDate, setFinalDate] = useState(today);
+  const [finalDate, setFinalDate] = useState(finalDate_);
 
   
 
@@ -101,17 +101,14 @@ export default function ShowsComplainants() {
 
       const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
 
-      const promises = response_2.data.map(async (item, index) => {
+      const promises = response.data.map(async (item, index) => {
         if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
           processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
 
-        
-
-    
             const event = {
               organizer_email: item.organizer_email,
-          
-              attendances:  item.attendances,
+              amount: item.amount,
+            
           
             };
 
@@ -136,7 +133,7 @@ export default function ShowsComplainants() {
       return;
     }
     loadOrganizers();
-  }, []);
+  }, [initialDate,finalDate]);
 
 
   const [searchText, setSearchText] = React.useState('');
@@ -161,7 +158,7 @@ export default function ShowsComplainants() {
     if (sortingColumn === 'events') {
       return sortingDirection === 'asc' ? a.amount - b.amount : b.amount - a.amount;
     } else if (sortingColumn === 'people') {
-      return sortingDirection === 'asc' ? a.attendances - b.attendances : b.attendances - a.attendances;
+      return sortingDirection === 'desc' ? a.amount - b.amount : b.amount - a.amount;
     }
     return 0;
   });
@@ -173,8 +170,8 @@ export default function ShowsComplainants() {
   return (
     <div>
      
-      <Typography variant="h6" component="div" sx={{ marginLeft: '200px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
-      Top eventos por organizador
+      <Typography variant="h6" component="div" sx={{ marginLeft: '160px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
+      Ranking organizadores por eventos
       </Typography>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
         <Paper sx={{ width: '100%' }} elevation={5}>
@@ -203,7 +200,20 @@ export default function ShowsComplainants() {
                 onChange={handleSearchChange}
               />
 
-      
+               <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-label">Ordenar por</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sortingColumn}
+          label="Ordenar por"
+          onChange={handleSortingColumnChange}
+        >
+          <MenuItem sx={{ color: 'black' }} value={'events'}>Mayor cantidad de eventos</MenuItem>
+          <MenuItem sx={{ color: 'black' }} value={'people'}>Menor cantidad de eventos</MenuItem>
+        </Select>
+      </FormControl>
+    
 
             </div>
 
@@ -212,9 +222,8 @@ export default function ShowsComplainants() {
 
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell align="center"> Mail</StyledTableCell>
-                  
-                    <StyledTableCell align="center">Cantidad de acreditaciones</StyledTableCell>
+                    <StyledTableCell> Mail</StyledTableCell>
+                    <StyledTableCell align="center">Cantidad de eventos</StyledTableCell>
                   </TableRow>
                 </TableHead>
 
@@ -225,11 +234,11 @@ export default function ShowsComplainants() {
                         .slice(0, rowsPerPage)
                         .map((row) => (
                           <StyledTableRow key={row.organizer_email}>
-                            <StyledTableCell align="center" component="th" scope="row">
+                            <StyledTableCell component="th" scope="row">
                               {row.organizer_email}
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                              {row.attendances}
+                              {row.amount}
                             </StyledTableCell>
                           </StyledTableRow>
                         ))

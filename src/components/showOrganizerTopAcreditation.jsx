@@ -46,13 +46,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function ShowsComplainants() {
+export default function ShowsTopAcredition(initialDate_, finalDate_) {
 
   const [organizers, setOrganizers] = useState([]);
-  const [initialDate, setInitialDate] = useState('2023-04-01');
+  const [initialDate, setInitialDate] = useState(initialDate_);
 
   let today = moment().format('YYYY-MM-DD');
-  const [finalDate, setFinalDate] = useState(today);
+  const [finalDate, setFinalDate] = useState(finalDate_);
 
   
 
@@ -84,13 +84,6 @@ export default function ShowsComplainants() {
     };
 
     try {
-      const response = await axios({
-        method: "get",
-        url: "/admin/events/organizers/ranking",
-        headers: headers,
-        params: params,
- 
-      });
 
       const response_2 = await axios({
         method: "get",
@@ -101,26 +94,21 @@ export default function ShowsComplainants() {
 
       const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
 
-      const promises = response.data.map(async (item, index) => {
+      const promises = response_2.data.map(async (item, index) => {
         if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
           processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
 
-          const matchingComplaints = response_2.data.filter(
-            (item_2) => item.organizer_email === item_2.organizer_email,
-       
-          );
-
-          if (matchingComplaints.length > 0) {
+      
+     
             const event = {
               organizer_email: item.organizer_email,
-              amount: item.amount,
-              attendances: matchingComplaints[0].attendances,
+              attendances: item.attendances,
           
             };
 
             load.push(event);
           }
-        }
+        
       });
 
       await Promise.all(promises); // Esperar a que se completen todas las promesas 
@@ -139,7 +127,7 @@ export default function ShowsComplainants() {
       return;
     }
     loadOrganizers();
-  }, []);
+  }, [initialDate,finalDate]);
 
 
   const [searchText, setSearchText] = React.useState('');
@@ -161,9 +149,9 @@ export default function ShowsComplainants() {
 
   const sortedData = [...organizers];
   sortedData.sort((a, b) => {
-    if (sortingColumn === 'events') {
-      return sortingDirection === 'asc' ? a.amount - b.amount : b.amount - a.amount;
-    } else if (sortingColumn === 'people') {
+    if (sortingColumn === 'people') {
+      return sortingDirection === 'desc' ? a.attendances - b.attendances : b.attendances - a.attendances;
+    } else if (sortingColumn === 'events') {
       return sortingDirection === 'asc' ? a.attendances - b.attendances : b.attendances - a.attendances;
     }
     return 0;
@@ -176,8 +164,8 @@ export default function ShowsComplainants() {
   return (
     <div>
      
-      <Typography variant="h6" component="div" sx={{ marginLeft: '200px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
-        Top acreditaciones por organizador
+      <Typography variant="h6" component="div" sx={{ marginLeft: '160px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
+        Ranking organizadores por acreditaciones
       </Typography>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
         <Paper sx={{ width: '100%' }} elevation={5}>
@@ -205,6 +193,20 @@ export default function ShowsComplainants() {
                 value={searchText}
                 onChange={handleSearchChange}
               />
+
+               <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-label">Ordenar por</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sortingColumn}
+          label="Ordenar por"
+          onChange={handleSortingColumnChange}
+        >
+          <MenuItem sx={{ color: 'black' }} value={'events'}>Mayor cantidad de acreditaciones</MenuItem>
+          <MenuItem sx={{ color: 'black' }} value={'people'}>Menor cantidad de acreditaciones</MenuItem>
+        </Select>
+      </FormControl>
     
 
             </div>
@@ -214,8 +216,8 @@ export default function ShowsComplainants() {
 
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell align="center"> Mail</StyledTableCell>
-                    <StyledTableCell align="center">Cantidad de eventos</StyledTableCell>
+                    <StyledTableCell> Mail</StyledTableCell>
+                    <StyledTableCell align="center">Cantidad de acreditaciones</StyledTableCell>
                   </TableRow>
                 </TableHead>
 
@@ -225,14 +227,13 @@ export default function ShowsComplainants() {
                       {filteredData
                         .slice(0, rowsPerPage)
                         .map((row) => (
-                          <StyledTableRow  key={row.organizer_email}>
-                            <StyledTableCell align="center" component="th" scope="row">
+                          <StyledTableRow key={row.organizer_email}>
+                            <StyledTableCell component="th" scope="row">
                               {row.organizer_email}
                             </StyledTableCell>
                             <StyledTableCell align="center">
-                              {row.amount}
+                              {row.attendances}
                             </StyledTableCell>
-                            
                           </StyledTableRow>
                         ))
                       }

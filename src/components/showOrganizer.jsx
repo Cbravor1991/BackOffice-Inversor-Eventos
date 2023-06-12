@@ -46,13 +46,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function ShowsComplainants() {
+export default function ShowsComplainants(initialDate_, finalDate_) {
 
   const [organizers, setOrganizers] = useState([]);
-  const [initialDate, setInitialDate] = useState('2023-04-01');
+  const [initialDate, setInitialDate] = useState(initialDate_);
 
   let today = moment().format('YYYY-MM-DD');
-  const [finalDate, setFinalDate] = useState(today);
+  const [finalDate, setFinalDate] = useState(finalDate_);
+
+
+
 
   
 
@@ -60,6 +63,7 @@ export default function ShowsComplainants() {
   const loadOrganizers = async () => {
     console.log(initialDate)
     console.log(finalDate)
+    
     const load = [];
 
     let token_user;
@@ -139,7 +143,7 @@ export default function ShowsComplainants() {
       return;
     }
     loadOrganizers();
-  }, []);
+  }, [initialDate,finalDate]);
 
 
   const [searchText, setSearchText] = React.useState('');

@@ -551,20 +551,20 @@ const Dashboard = () => {
           
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
-              <ShowsTopOrganizerEvent />
+              <ShowsTopOrganizerEvent initialDate={initialDate} finalDate={finalDate} />
             </Paper>
           </Grid>
 
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
-              <ShowsTopOrganizerAcreditation />
+              <ShowsTopOrganizerAcreditation initialDate={initialDate} finalDate={finalDate} />
             </Paper>
           </Grid>
 
 
 
         </Grid>
-        < ShowsOrganizer />
+        < ShowsOrganizer initialDate={initialDate} finalDate={finalDate} />
 
       </LocalizationProvider>
 
