@@ -22,7 +22,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import moment from "moment";
-import ShowsOrganizer from '../components/showOrganizer';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -176,9 +175,100 @@ export default function ShowsComplainants() {
 
   return (
     <div>
-      <Navbar />
-      <ShowsOrganizer />
      
+      <Typography variant="h6" component="div" sx={{ marginLeft: '550px', color: 'black', fontSize: 24, fontWeight: 700, mb: 2, marginTop: '20px' }}>
+        Ranking de organizadores
+      </Typography>
+      <Grid sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+        <Paper sx={{ width: '100%' }} elevation={5}>
+          <TableContainer component={Grid}>
+            <div>
+            <FormControl sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="demo-simple-select-label">Mostrar</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={rowsPerPage}
+                  label="Mostrar"
+                  onChange={handleRowsPerPageChange}
+                >
+                  <MenuItem sx={{ color: 'black' }} value={5}>5</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={10}>10</MenuItem>
+                  <MenuItem sx={{ color: 'black' }} value={25}>25</MenuItem>
+                </Select>
+              </FormControl>
+
+              <TextField
+                sx={{ m: 1, width: '30ch' }}
+                label="Buscar por organizador"
+                variant="outlined"
+                value={searchText}
+                onChange={handleSearchChange}
+              />
+
+               <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-label">Ordenar por</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sortingColumn}
+          label="Ordenar por"
+          onChange={handleSortingColumnChange}
+        >
+          <MenuItem sx={{ color: 'black' }} value={'events'}>Eventos creados</MenuItem>
+          <MenuItem sx={{ color: 'black' }} value={'people'}>Acreditaciones</MenuItem>
+        </Select>
+      </FormControl>
+    
+
+            </div>
+
+            <Grid sx={{ maxHeight: '700px', overflowY: 'scroll' }}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell> Mail</StyledTableCell>
+                    <StyledTableCell align="center">Cantidad de eventos</StyledTableCell>
+                    <StyledTableCell align="center">Cantidad de acreditaciones</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+
+                {(organizers && organizers.length > 0) ?
+                  (
+                    <TableBody>
+                      {filteredData
+                        .slice(0, rowsPerPage)
+                        .map((row) => (
+                          <StyledTableRow key={row.organizer_email}>
+                            <StyledTableCell component="th" scope="row">
+                              {row.organizer_email}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row.amount}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row.attendances}
+                            </StyledTableCell>
+                          </StyledTableRow>
+                        ))
+                      }
+                    </TableBody>
+                  )
+                  :
+                  (
+                    <StyledTableRow >
+                      <StyledTableCell component="th" scope="row">
+                        NO HAY ORGANIZADORES
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  )}
+              </Table>
+            </Grid>
+
+          </TableContainer>
+        </Paper>
+      </Grid>
     </div>
   );
 }

@@ -9,6 +9,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import axios from '../api/axios';
 import moment from "moment";
+import ShowsOrganizer from '../components/showOrganizer';
+import ShowsTopOrganizerEvent from '../components/showOrganizerTopEvent'
+import ShowsTopOrganizerAcreditation from '../components/showOrganizerTopAcreditation'
+import Typography from '@mui/material/Typography';
 require('highcharts/modules/map')(Highcharts);
 
 
@@ -400,15 +404,21 @@ const Dashboard = () => {
           </div>
         </div>
 
+
+
+
         <Grid container style={{ padding: '10px', paddingTop: 0, paddingBottom: 0 }} justifyContent={'center'} rowSpacing={1} columnSpacing={{ xs: 0.5, sm: 1, md: 1 }}>
-          <Grid item xs={3}>
-            <Paper style={{ display: 'flex', justifyContent: 'center', padding: "5px", color: 'grey' }} elevation={3}>
+
+          <Grid item xs={6} s>
+            <Paper style={{ padding: "5px", color: 'grey', display: 'flex', justifyContent: 'center', alignItems: 'center' }} elevation={3}>
               <HighchartsReact
+                style={{ padding: "5px", color: 'grey' }}
                 options={{
                   chart: {
                     type: "pie",
                     height: graphSize,
-                    width: 300,
+                    width: 500,
+
                   },
                   title: { text: 'Estado de eventos' },
                   series: [{
@@ -537,18 +547,27 @@ const Dashboard = () => {
               />
             </Paper>
           </Grid>
+   
+          
+          <Grid item xs={6} s>
+            <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
+              <ShowsTopOrganizerEvent />
+            </Paper>
+          </Grid>
 
-
-
-
-
-
-
+          <Grid item xs={6} s>
+            <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
+              <ShowsTopOrganizerAcreditation />
+            </Paper>
+          </Grid>
 
 
 
         </Grid>
+        < ShowsOrganizer />
+
       </LocalizationProvider>
+
     </div>
   )
 };
