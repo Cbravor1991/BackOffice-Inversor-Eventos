@@ -33,7 +33,20 @@ const Dashboard = () => {
   const [dataSuspensions, setDataSuspensions] = useState([]);
   const [graphSize, setGraphSize] = useState((window.innerHeight - 180.5) / 2);
 
+  //datos para los rankings
+  const [dataTopEvents, setDataTopEvents] = useState([]);
+  const [emptyDataTopEvents, setEmptyDataTopEvents] = useState(false);
+  const [dataTopAcreditations, setDataTopAcreditations] = useState([]);
+  const [emptyDataTopAcreditation, setEmptyDataTopAcreditation] = useState(false);
+  const [dataTopRanking, setDataTopRanking] = useState([]);
+  const [emptyDataTopRanking, setEmptyDataTopRanking] = useState(false);
+
+
   console.log(window.localStorage.getItem("token"));
+
+  const fetchDataRankingOption2 = async () => {
+   
+  };
 
 
   const verifyMonth = async (month) => {
@@ -47,7 +60,7 @@ const Dashboard = () => {
 
     if (month >= 1 && month <= 12) {
       target = months_[month - 1];
-      console.log('el taget es =>', target)
+
 
 
     } else {
@@ -56,7 +69,7 @@ const Dashboard = () => {
 
     for (let i in dateCategories) {
       if (target == dateCategories[i]) {
-        console.log('encontro')
+
         return i;
       }
     }
@@ -104,17 +117,126 @@ const Dashboard = () => {
 
   };
 
+  const fetchDataTopAcreditation = async () => {
+    const load = [];
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
 
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    }
+    const params = {
+      "init_date": initialDate.format('YYYY-MM-DD'),
+      "end_date": finalDate.format('YYYY-MM-DD'),
+    };
 
+    try {
+      const response = await axios({
+        method: "get",
+        url: "/admin/attendances/organizers/ranking",
+        headers: headers,
+        params: params,
 
+      });
 
+      if (response.data.length > 0) {
+        setEmptyDataTopAcreditation(false)
+        const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
 
+        const promises = response.data.map(async (item, index) => {
+          if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
+            processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
+
+            const event = {
+              organizer_email: item.organizer_email,
+              attendances: item.attendances,
+            };
+
+            load.push(event);
+          }
+        });
+        await Promise.all(promises); // Esperar a que se completen todas las promesas 
+
+        setDataTopAcreditations(load);
+        
+      } else { setDataTopAcreditations([]) }
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchDataTopEvents = async () => {
+    const load = [];
+    let token_user;
+    if (!window.localStorage.getItem("token")) {
+      console.log("no autorizado");
+      window.location.href = "/home";
+      return;
+    } else {
+      token_user = window.localStorage.getItem("token");
+    }
+
+    const headers = {
+      accept: "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "*",
+      Authorization: "Bearer " + token_user,
+    }
+    const params = {
+      "init_date": initialDate.format('YYYY-MM-DD'),
+      "end_date": finalDate.format('YYYY-MM-DD'),
+    };
+
+    try {
+      const response = await axios({
+        method: "get",
+        url: "/admin/events/organizers/ranking",
+        headers: headers,
+        params: params,
+
+      });
+
+      if (response.data.length > 0) {
+        setEmptyDataTopEvents(false)
+        const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
+
+        const promises = response.data.map(async (item, index) => {
+          if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
+            processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
+
+            const event = {
+              organizer_email: item.organizer_email,
+              amount: item.amount,
+            };
+
+            load.push(event);
+          }
+        });
+        await Promise.all(promises); // Esperar a que se completen todas las promesas 
+
+        setDataTopEvents(load);
+      } else { setDataTopEvents([]) }
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
 
   const fetchDataState = async () => {
-
-
     var options = {
       method: 'GET',
       url: 'admin/event/statistics/state',
@@ -131,14 +253,19 @@ const Dashboard = () => {
 
 
     try {
+
       const response = await axios(options);
-      const newDataState = [];
+      if (response.data.length > 0) {
+        const newDataState = [];
 
-      for (let [key, value] of Object.entries(response.data)) {
-        newDataState.push({ "name": value.state, "y": value.amount });
+        for (let [key, value] of Object.entries(response.data)) {
+          newDataState.push({ "name": value.state, "y": value.amount });
+        }
+
+        setDataState(newDataState);
+      } else {
+        setDataState([])
       }
-
-      setDataState(newDataState);
 
     } catch (error) {
       console.error('Error al obtener los datos:', error);
@@ -167,16 +294,9 @@ const Dashboard = () => {
 
 
         if (response.data.length > 0) {
-
-
-
           for (let i in dateCategories) {
-
             data_Attendances.push(0)
           }
-
-
-
           for (let i in response.data) {
             if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
               let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
@@ -184,13 +304,7 @@ const Dashboard = () => {
               data_Attendances[position] = data_Attendances[position] + response.data[i].attendances
 
             }
-
-
           }
-
-
-
-
           setDataAttendances(data_Attendances)
         }
         else {
@@ -200,10 +314,6 @@ const Dashboard = () => {
 
 
         }
-
-
-
-
       })
   };
 
@@ -248,8 +358,6 @@ const Dashboard = () => {
 
           setCategoriesEvents([]);
           setDataEvents([]);
-
-
         }
       })
   };
@@ -286,8 +394,6 @@ const Dashboard = () => {
               data_Complaints[position] = data_Complaints[position] + response.data[i].complaints
 
             }
-
-
           }
           setDataComplaints(data_Complaints)
         }
@@ -315,7 +421,7 @@ const Dashboard = () => {
 
     await axios(options)
       .then(async function (response) {
-        console.log('suspendido=>', response)
+
 
 
         if (response.data.length > 0) {
@@ -331,14 +437,10 @@ const Dashboard = () => {
               data_Suspension[position] = data_Suspension[position] + response.data[i].suspensions
 
             }
-
-
           }
           setDataSuspensions(data_Suspension)
         }
         else {
-
-
           setDataSuspensions([]);
 
 
@@ -369,6 +471,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    fetchDataTopAcreditation()
+    fetchDataTopEvents();
     chargeDate();
     fetchDataState();
     fetchDataAttendances();
@@ -539,32 +643,44 @@ const Dashboard = () => {
                     }
                   }, {
                     name: 'Suspensiones',
-                    data: [0, 0, 3] // Ejemplo de datos de prueba
-                    //data: dataSuspensions
+                    //data: [0, 0, 3] // Ejemplo de datos de prueba
+                    data: dataSuspensions
                   }]
                 }}
                 highcharts={Highcharts}
               />
             </Paper>
           </Grid>
-   
-          
+
+
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
-              <ShowsTopOrganizerEvent initialDate={initialDate} finalDate={finalDate} />
+            
+              {dataTopEvents.length > 0 && !emptyDataTopEvents && <ShowsTopOrganizerEvent dataTopEvents={dataTopEvents} />}
+              {dataTopEvents.length == 0 && <ShowsTopOrganizerEvent dataTopEvents={dataTopEvents} />}
+
+
+
             </Paper>
           </Grid>
 
           <Grid item xs={6} s>
             <Paper style={{ padding: "5px", color: 'grey' }} elevation={3}>
-              <ShowsTopOrganizerAcreditation initialDate={initialDate} finalDate={finalDate} />
+              {console.log('acreditaciones=>',dataTopAcreditations.length)}
+              {dataTopAcreditations.length > 0 && <ShowsTopOrganizerAcreditation dataTopAcreditations={dataTopAcreditations} />}
+              {dataTopAcreditations.length == 0 && <ShowsTopOrganizerAcreditation dataTopAcreditations={dataTopAcreditations} />}
+
+
+
             </Paper>
           </Grid>
+
+
 
 
 
         </Grid>
-        < ShowsOrganizer initialDate={initialDate} finalDate={finalDate} />
+
 
       </LocalizationProvider>
 

@@ -46,78 +46,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function ShowsTopAcredition(initialDate_, finalDate_) {
+export default function ShowsTopAcredition(dataTopAcreditations) {
 
   const [organizers, setOrganizers] = useState([]);
-  const [initialDate, setInitialDate] = useState(initialDate_);
+  const [initialDate, setInitialDate] = useState();
 
   let today = moment().format('YYYY-MM-DD');
-  const [finalDate, setFinalDate] = useState(finalDate_);
+  const [finalDate, setFinalDate] = useState();
 
   
 
 
-  const loadOrganizers = async () => {
-    console.log(initialDate)
-    console.log(finalDate)
-    const load = [];
-
-    let token_user;
-    if (!window.localStorage.getItem("token")) {
-      console.log("no autorizado");
-      window.location.href = "/home";
-      return;
-    } else {
-      token_user = window.localStorage.getItem("token");
-    }
-
-    const headers = {
-      accept: "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-      "Access-Control-Allow-Headers": "*",
-      Authorization: "Bearer " + token_user,
-    }
-    const params= {
-      "init_date":initialDate,
-      "end_date": finalDate ,
-    };
-
-    try {
-
-      const response_2 = await axios({
-        method: "get",
-        url: "/admin/attendances/organizers/ranking",
-        headers: headers,
-        params: params,
-      });
-
-      const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
-
-      const promises = response_2.data.map(async (item, index) => {
-        if (!processedUsers.has(item.organizer_email)) { // Verificar si el usuario ya ha sido procesado
-          processedUsers.add(item.organizer_email); // Marcar el usuario como procesado
-
-      
-     
-            const event = {
-              organizer_email: item.organizer_email,
-              attendances: item.attendances,
-          
-            };
-
-            load.push(event);
-          }
-        
-      });
-
-      await Promise.all(promises); // Esperar a que se completen todas las promesas 
-
-      setOrganizers(load);
+  const loadOrganizers = async (datos) => {
+    console.log('imprimi=>', datos)
+   
     
-    } catch (error) {
-      console.log(error);
-    }
+      if(datos.dataTopAcreditations.length>0){
+        console.log('entro')
+
+      setOrganizers(datos.dataTopAcreditations);
+      }
+    
   };
 
   useEffect(() => {
@@ -126,7 +75,7 @@ export default function ShowsTopAcredition(initialDate_, finalDate_) {
       window.location.href = "/home";
       return;
     }
-    loadOrganizers();
+    loadOrganizers(dataTopAcreditations);
   }, [initialDate,finalDate]);
 
 
@@ -216,7 +165,7 @@ export default function ShowsTopAcredition(initialDate_, finalDate_) {
 
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell> Mail</StyledTableCell>
+                    <StyledTableCell align="center"> Mail</StyledTableCell>
                     <StyledTableCell align="center">Cantidad de acreditaciones</StyledTableCell>
                   </TableRow>
                 </TableHead>
@@ -228,7 +177,7 @@ export default function ShowsTopAcredition(initialDate_, finalDate_) {
                         .slice(0, rowsPerPage)
                         .map((row) => (
                           <StyledTableRow key={row.organizer_email}>
-                            <StyledTableCell component="th" scope="row">
+                            <StyledTableCell align="center" component="th" scope="row">
                               {row.organizer_email}
                             </StyledTableCell>
                             <StyledTableCell align="center">
