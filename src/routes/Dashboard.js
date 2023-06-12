@@ -41,6 +41,13 @@ const Dashboard = () => {
   const [dataTopRanking, setDataTopRanking] = useState([]);
   const [emptyDataTopRanking, setEmptyDataTopRanking] = useState(false);
 
+  const translate = {
+    "published": "publicado",
+    "draft": "borrador",
+    "canceled": "cancelado",
+    "suspended": "suspendido",
+    "finished": "finalizado"
+  }
 
   console.log(window.localStorage.getItem("token"));
 
@@ -259,7 +266,7 @@ const Dashboard = () => {
         const newDataState = [];
 
         for (let [key, value] of Object.entries(response.data)) {
-          newDataState.push({ "name": value.state, "y": value.amount });
+          newDataState.push({ "name": translate[value.state], "y": value.amount });
         }
 
         setDataState(newDataState);
