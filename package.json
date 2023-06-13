@@ -2,7 +2,7 @@
   "name": "ticketapp-organizador",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/home",
+
   
   "dependencies": {
     "@emotion/react": "^11.11.0",
