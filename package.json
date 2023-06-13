@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "/home",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Cbravor1991/prueba_render.git"
-  },
+  
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",

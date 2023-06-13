@@ -19,7 +19,7 @@ require('highcharts/modules/map')(Highcharts);
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs("2023-04-01"));
   let today = moment().format('yyyy-MM-DD');
-  const [finalDate, setFinalDate] = useState(dayjs(today));
+  const [finalDate, setFinalDate] = useState(dayjs("2023-06-15"));
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
   const [dataAttendances, setDataAttendances] = useState([]);
