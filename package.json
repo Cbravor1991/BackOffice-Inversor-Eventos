@@ -2,11 +2,6 @@
   "name": "ticketapp-organizador",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/home",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Cbravor1991/prueba_render.git"
-  },
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.11.1",
