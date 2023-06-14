@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/NavBar';
 import swal from 'sweetalert2';
 import { Button, Grid } from '@mui/material';
-import { Height } from '@material-ui/icons';
+import { Height } from '@mui/icons-material';
 import data from '../data/dataComplainants'
 import Typography from '@mui/material/Typography';
 import axios from '../api/axios';

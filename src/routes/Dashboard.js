@@ -41,6 +41,13 @@ const Dashboard = () => {
   const [dataTopRanking, setDataTopRanking] = useState([]);
   const [emptyDataTopRanking, setEmptyDataTopRanking] = useState(false);
 
+  const translate = {
+    "published": "publicado",
+    "draft": "borrador",
+    "canceled": "cancelado",
+    "suspended": "suspendido",
+    "finished": "finalizado"
+  }
 
   console.log(window.localStorage.getItem("token"));
 
@@ -255,14 +262,19 @@ const Dashboard = () => {
     try {
 
       const response = await axios(options);
-      if (response.data.length > 0) {
-        const newDataState = [];
+     
+      if (response.data) {
+        //const newDataState = [];
+        setDataState([]);
 
-        for (let [key, value] of Object.entries(response.data)) {
-          newDataState.push({ "name": value.state, "y": value.amount });
+        for(let i in response.data){
+              setDataState(dataState => [...dataState, ({"name":translate[i],"y":response.data[i]})]);
         }
-
-        setDataState(newDataState);
+        
+        //console.log(newDataState);
+        //setDataState(newDataState);
+        
+        console.log(dataState);
       } else {
         setDataState([])
       }

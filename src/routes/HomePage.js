@@ -2,10 +2,9 @@ import React from 'react';
 import '../styles/HomePage.scss';
 import { Link } from 'react-router-dom';
 import { useSpring, animated } from 'react-spring';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Grid } from '@material-ui/core';
 import {useState} from 'react';
 import axios from '../api/axios';
 

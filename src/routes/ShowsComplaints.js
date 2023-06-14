@@ -20,7 +20,7 @@ import axios from '../api/axios';
 import Navbar from '../components/NavBar';
 import swal from 'sweetalert2';
 import { Button, Grid } from '@mui/material';
-import { Category, Height } from '@material-ui/icons';
+import { Category, Height } from '@mui/icons-material';
 import data from '../data/dataComplaints'
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
