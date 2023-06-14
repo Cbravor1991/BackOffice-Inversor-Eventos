@@ -19,7 +19,7 @@ require('highcharts/modules/map')(Highcharts);
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs("2023-04-01"));
   let today = moment().format('yyyy-MM-DD');
-  const [finalDate, setFinalDate] = useState(dayjs(today));
+  const [finalDate, setFinalDate] = useState(dayjs("2023-06-15"));
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
   const [dataAttendances, setDataAttendances] = useState([]);
@@ -264,17 +264,13 @@ const Dashboard = () => {
       const response = await axios(options);
      
       if (response.data) {
-        //const newDataState = [];
-        setDataState([]);
+        const newDataState = [];
 
-        for(let i in response.data){
-              setDataState(dataState => [...dataState, ({"name":translate[i],"y":response.data[i]})]);
+        for (let [key, value] of Object.entries(response.data)) {
+          newDataState.push({ "name": translate[value.state], "y": value.amount });
         }
         
-        //console.log(newDataState);
-        //setDataState(newDataState);
-        
-        console.log(dataState);
+        setDataState(newDataState);
       } else {
         setDataState([])
       }
