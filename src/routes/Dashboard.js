@@ -19,7 +19,7 @@ require('highcharts/modules/map')(Highcharts);
 const Dashboard = () => {
   const [initialDate, setInitialDate] = useState(dayjs("2023-04-01"));
   let today = moment().format('yyyy-MM-DD');
-  const [finalDate, setFinalDate] = useState(dayjs("2023-06-15"));
+  const [finalDate, setFinalDate] = useState(dayjs(today ));
   const [unit, setUnit] = useState('day');
   const [dataState, setDataState] = useState([]);
   const [dataAttendances, setDataAttendances] = useState([]);
@@ -64,8 +64,8 @@ const Dashboard = () => {
       'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
     ];
 
-    if (months_.includes(month)) {
-      target = month;
+    if (month >= 1 && month <= 12) {
+      target = months_[month - 1];
 
     } else {
       return 'Invalid month';
@@ -120,6 +120,7 @@ const Dashboard = () => {
 
 
   const fetchDataTopAcreditation = async () => {
+  
     const load = [];
     let token_user;
     if (!window.localStorage.getItem("token")) {
@@ -180,6 +181,7 @@ const Dashboard = () => {
 
 
   const fetchDataTopEvents = async () => {
+
     const load = [];
     let token_user;
     if (!window.localStorage.getItem("token")) {
@@ -276,6 +278,7 @@ const Dashboard = () => {
 
 
   const fetchDataAttendances = async () => {
+    //const newFinalDate = dayjs(finalDate).add(1, 'day');
 
     const data_Attendances = []
     var options = {
@@ -301,8 +304,8 @@ const Dashboard = () => {
             data_Attendances.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
-              let position = await verifyMonth(response.data[i].date.substring(0,3));
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
 
               data_Attendances[position] = data_Attendances[position] + response.data[i].attendances
 
@@ -322,6 +325,8 @@ const Dashboard = () => {
 
 
   const fetchDataEvents = async () => {
+    //const finalDate = dayjs(finalDate).add(1, 'day');
+    
     const data_Events = []
     var options = {
       method: 'GET',
@@ -347,8 +352,8 @@ const Dashboard = () => {
           }
 
           for (let i in response.data) {
-            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
-              let position = await verifyMonth(response.data[i].date.substring(0,3));
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
 
               data_Events[position] = data_Events[position] + response.data[i].events;
 
@@ -368,7 +373,7 @@ const Dashboard = () => {
 
 
   const fetchDataComplaints = async () => {
-
+    //const newFinalDate = dayjs(finalDate).add(1, 'day');
     const data_Complaints = []
     var options = {
       method: 'GET',
@@ -392,8 +397,8 @@ const Dashboard = () => {
             data_Complaints.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
-              let position = await verifyMonth(response.data[i].date.substring(0,3));
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
 
               data_Complaints[position] = data_Complaints[position] + response.data[i].complaints
 
@@ -409,6 +414,7 @@ const Dashboard = () => {
 
   const fetchDataSuspension = async () => {
 
+    //const newFinalDate = dayjs(finalDate).add(1, 'day');
     const data_Suspension = []
     var options = {
       method: 'GET',
@@ -425,6 +431,7 @@ const Dashboard = () => {
 
     await axios(options)
       .then(async function (response) {
+        console.log('las suspensiones => son', response.data)
 
 
 
@@ -435,10 +442,12 @@ const Dashboard = () => {
             data_Suspension.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
-              let position = await verifyMonth(response.data[i].date.substring(0,3));
+            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
+              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+              console.log('es la', position)
 
               data_Suspension[position] = data_Suspension[position] + response.data[i].suspensions
+             
 
             }
           }
