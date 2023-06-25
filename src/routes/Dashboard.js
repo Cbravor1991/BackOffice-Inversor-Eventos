@@ -260,13 +260,14 @@ const Dashboard = () => {
       const response = await axios(options);
      
       if (response.data) {
-        const newDataState = [];
+        //const newDataState = [];
+        setDataState([]);
 
-        for (let [key, value] of Object.entries(response.data)) {
-          newDataState.push({ "name": translate[value.state], "y": value.amount });
+        for(let i in response.data){
+          setDataState(dataState => [...dataState, ({"name":translate[i],"y":response.data[i]})]);
         }
         
-        setDataState(newDataState);
+        //setDataState(newDataState);
       } else {
         setDataState([])
       }
