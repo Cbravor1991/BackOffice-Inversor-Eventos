@@ -64,8 +64,8 @@ const Dashboard = () => {
       'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
     ];
 
-    if (month >= 1 && month <= 12) {
-      target = months_[month - 1];
+    if (months_.includes(month)) {
+      target = month;
 
     } else {
       return 'Invalid month';
@@ -83,8 +83,8 @@ const Dashboard = () => {
 
   const chargeDate = async () => {
     const months = [
-     'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-      'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+         'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+         'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
      ];
 
     const initialMonth = parseInt(initialDate.format('MM'));
@@ -260,14 +260,13 @@ const Dashboard = () => {
       const response = await axios(options);
      
       if (response.data) {
-        //const newDataState = [];
+
         setDataState([]);
 
         for(let i in response.data){
           setDataState(dataState => [...dataState, ({"name":translate[i],"y":response.data[i]})]);
         }
         
-        //setDataState(newDataState);
       } else {
         setDataState([])
       }
@@ -305,9 +304,9 @@ const Dashboard = () => {
             data_Attendances.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
-              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
-
+            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
+              let position = await verifyMonth(response.data[i].date.substring(0,3));
+  
               data_Attendances[position] = data_Attendances[position] + response.data[i].attendances
 
             }
@@ -353,8 +352,8 @@ const Dashboard = () => {
           }
 
           for (let i in response.data) {
-            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
-              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
+              let position = await verifyMonth(response.data[i].date.substring(0,3));
 
               data_Events[position] = data_Events[position] + response.data[i].events;
 
@@ -398,8 +397,8 @@ const Dashboard = () => {
             data_Complaints.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
-              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
+            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
+              let position = await verifyMonth(response.data[i].date.substring(0,3));
 
               data_Complaints[position] = data_Complaints[position] + response.data[i].complaints
 
@@ -443,9 +442,8 @@ const Dashboard = () => {
             data_Suspension.push(0)
           }
           for (let i in response.data) {
-            if (await verifyMonth((parseInt(response.data[i].date.substring(5)))) >= 0) {
-              let position = await verifyMonth((parseInt(response.data[i].date.substring(5))));
-              console.log('es la', position)
+            if (await verifyMonth(response.data[i].date.substring(0,3)) >= 0) {
+              let position = await verifyMonth(response.data[i].date.substring(0,3));
 
               data_Suspension[position] = data_Suspension[position] + response.data[i].suspensions
              
