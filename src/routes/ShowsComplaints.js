@@ -91,8 +91,18 @@ export default function ShowsComplaints() {
         headers: headers,
       });
 
+      const response_3 = await axios({
+        method: "get",
+        url: `/admin/complaintsUsers`,
+        headers: headers,
+      });
+
       const promises = response.data.map(async (item, index) => {
         const eventObj = response_2.data.find(
+          (event) => event.User.id === item.user_id && event.Event.id === item.event_id
+        );
+        
+        const eventObj2 = response_3.data.find(
           (event) => event.User.id === item.user_id && event.Event.id === item.event_id
         );
 
@@ -102,7 +112,7 @@ export default function ShowsComplaints() {
             name: eventObj.Event.title,
             category: item.category,
             description: item.description,
-            email:eventObj.User.email ,
+            email:eventObj2.User.email ,
          
           };
           return event;
@@ -153,8 +163,6 @@ export default function ShowsComplaints() {
   }
 
 
-
-
   const loadComplaints = async () => {
     const load = [];
 
@@ -188,26 +196,32 @@ export default function ShowsComplaints() {
         url: `/admin/complaints`,
         headers: headers,
       });
+      
+      console.log(response);
+      console.log(response_2);
 
-      const promises = response.data.map(async (item, index) => {
-        const eventObj = response_2.data.find(
-          (event) => event.Event.id === item.id
+      const promises = Object.entries(response.data).forEach(async item => {
+
+        const eventObj = Object.values(response_2.data).find(
+          (value) => value.id === parseInt(item[0])
         );
-
+        
         if (eventObj) {
           const event = {
-            event_id_use: eventObj.Event.id,
-            title: eventObj.Event.title,
-            category: eventObj.Event.category,
-            state: eventObj.Event.state,
-            denounce: item.denounce,
+            event_id_use: eventObj.id,
+            title: eventObj.title,
+            category: eventObj.category,
+            state: eventObj.state,
+            denounce: item[1],
           };
+          load.push(event);
           return event;
         }
       });
 
-      const events = await Promise.all(promises);
-      load.push(...events);
+      //const events = await Promise.all(promises);
+      
+      //load.push(...events);
       setComplainants(load);
     } catch (error) {
       console.log(error);
