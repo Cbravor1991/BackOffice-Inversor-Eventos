@@ -98,29 +98,30 @@ export default function ShowsComplaints() {
       });
 
       const promises = response.data.map(async (item, index) => {
-        const eventObj = response_2.data.find(
-          (event) => event.User.id === item.user_id && event.Event.id === item.event_id
+        const eventObj = Object.values(response_2.data).find(
+          (event) => /*event.User.id === item.user_id &&*/ event.id === item.event_id
         );
         
-        const eventObj2 = response_3.data.find(
-          (event) => event.User.id === item.user_id && event.Event.id === item.event_id
+        const eventObj2 = Object.values(response_3.data).find(
+          (event) => event.id === item.user_id /*&& event.Event.id === item.event_id*/
         );
 
         if (eventObj) {
           const event = {
-            id_event: eventObj.Event.id,
-            name: eventObj.Event.title,
+            id_event: eventObj.id,
+            name: eventObj.title,
             category: item.category,
             description: item.description,
-            email:eventObj2.User.email ,
+            email:eventObj2.email ,
          
           };
+          load.push(event);
           return event;
         }
       });
 
-      const events = await Promise.all(promises);
-      load.push(...events);
+      //const events = await Promise.all(promises);
+      //sload.push(...events);
       window.localStorage.setItem("userComplaints", JSON.stringify(load));
 
         window.location.href = "/eventUserCompalints";
