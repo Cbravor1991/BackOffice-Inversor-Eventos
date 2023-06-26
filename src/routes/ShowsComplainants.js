@@ -84,28 +84,30 @@ export default function ShowsComplainants() {
   
       const response_2 = await axios({
         method: "get",
-        url: "/admin/complaints",
+        url: "/admin/complaintsUsers",
         headers: headers,
       });
   
       console.log("denuncias =>", response_2.data);
   
       const processedUsers = new Set(); // Variable para realizar un seguimiento de los usuarios procesados
+      
+      const promises = Object.entries(response.data).forEach(async item => {
+        if (!processedUsers.has(item[0])) { // Verificar si el usuario ya ha sido procesado
+          processedUsers.add(item[0]); // Marcar el usuario como procesado
   
-      const promises = response.data.map(async (item, index) => {
-        if (!processedUsers.has(item.id)) { // Verificar si el usuario ya ha sido procesado
-          processedUsers.add(item.id); // Marcar el usuario como procesado
-  
-          const matchingComplaints = response_2.data.filter(
-            (item_2) => item.id === item_2.Complaint.user_id
+          const matchingComplaints = Object.values(response_2.data).filter(
+            (item_2) => item[0] === item_2.email
           );
+          
+          console.log(matchingComplaints)
   
           if (matchingComplaints.length > 0) {
             const event = {
-              email: item.email,
-              name: matchingComplaints[0].User.name,
-              numberComplaints: item.denounce,
-              state: item.suspended,
+              email: item[0],
+              name: matchingComplaints[0].name,
+              numberComplaints: item[1],
+              state: matchingComplaints[0].suspended,
             };
   
             load.push(event);
@@ -113,7 +115,7 @@ export default function ShowsComplainants() {
         }
       });
   
-      await Promise.all(promises); // Esperar a que se completen todas las promesas
+      //await Promise.all(promises); // Esperar a que se completen todas las promesas
   
       setComplainants(load);
     } catch (error) {
